@@ -16,12 +16,10 @@ import DeleteOutlineSharpIcon from "@mui/icons-material/DeleteOutlineSharp";
 const Form = () => {
   const isNonMobile = useMediaQuery("(min-width:600px)");
   const [openModal, setOpenModal] = React.useState(false);
-  const [sizes, setSizes] = React.useState([]);
   const [currentSize, setCurrentSize] = React.useState({
     name: "",
     quantity: "",
   });
-  const [imageUrls, setImageUrls] = React.useState([]);
   const [currentImageUrl, setCurrentImageUrl] = React.useState("");
 
   const { v4: uuidv4 } = require("uuid");
@@ -39,59 +37,70 @@ const Form = () => {
     setOpenModal(false);
   };
 
-  const handleAddSize = () => {
-    setSizes([
-      ...sizes,
-      { name: currentSize.name, quantity: currentSize.quantity },
-    ]);
+  const handleAddSize = (values, setValues) => {
+    const updatedValues = { ...values };
+    if (!updatedValues.sizes) {
+      updatedValues.sizes = [];
+    }
+    updatedValues.sizes.push({ name: currentSize.name, quantity: currentSize.quantity });
+    setValues(updatedValues);
     setCurrentSize({ name: "", quantity: "" });
     handleCloseModal();
   };
+  
 
-  const handleAddImageUrl = () => {
+  const handleAddImageUrl = (values, setValues) => {
     if (currentImageUrl.trim() !== "") {
-      setImageUrls([...imageUrls, currentImageUrl.trim()]);
+      setValues({
+        ...values,
+        imageUrls: [...values.imageUrls, currentImageUrl.trim()]
+      });
       setCurrentImageUrl("");
     }
   };
   // const handleFormSubmit = async(values) => {
   //   console.log('submit');
   // }
-  const handleFormSubmit = (values) => {
-    console.log("1111", values, imageUrls, sizes);
-    // try {
-    //   const productResponse = await Axios.post('http://localhost:8003/products', {
-    //     product_id: 'hghhfhghf',
-    //     name: values.product_name,
-    //     category: values.category,
-    //     description: values.description,
-    //     price: values.price,
-    //   });
-    //   for (const size of values.sizes) {
-    //     await Axios.post('http://localhost:8003/product/size', {
-    //       productId: productId,
-    //       sizeName: size.name,
-    //       quantity: size.quantity,
-    //       sizeId: sizeId
-    //     });
-    //   }
-    //   for (const imageUrl of values.imageUrls) {
-    //     await Axios.post('http://localhost:8003/product/image', {
-    //       imageId: imageId,
-    //       productId: productId,
-    //       imageUrl: imageUrl,
-    //     });
-    //   }
-    // } catch (error) {
-    //   console.error('Error while calling API:', error);
-    // }
+  const handleFormSubmit = async(values) => {
+    console.log("1111", values);
+    try {
+    console.log(22222);
+      const productResponse = await Axios.post('http://localhost:8004/products', {
+        product_id: 'hghhfhghfd',
+        name: values.product_name,
+        category: values.category,
+        description: values.description,
+        price: values.price,
+      });
+      for (const size of values.sizes) {
+        await Axios.post('http://localhost:8004/product/size', {
+          productId: productId,
+          sizeName: size.name,
+          quantity: size.quantity,
+          sizeId: sizeId
+        });
+      }
+      for (const imageUrl of values.imageUrls) {
+        await Axios.post('http://localhost:8004/product/image', {
+          imageId: imageId,
+          productId: productId,
+          imageUrl: imageUrl,
+        });
+      }
+    } catch (error) {
+      console.error('Error while calling API:', error);
+    }
   };
 
-  const handleRemoveSize = (index) => {
-    const updatedSizes = [...sizes];
+  const handleRemoveSize = (index, values, setValues) => {
+    const updatedSizes = [...values.sizes];
     updatedSizes.splice(index, 1);
-    setSizes(updatedSizes);
+    setValues({
+      ...values,
+      sizes: updatedSizes,
+    });
   };
+  
 
   const options = [
     { label: "SHOE", value: "shoe" },
@@ -107,7 +116,7 @@ const Form = () => {
         subtitle="Create a new product with size and image"
       />
       <Formik
-        // onSubmit={handleFormSubmit}
+        onSubmit={handleFormSubmit}
         initialValues={initialValues}
         validationSchema={checkoutSchema}
       >
@@ -118,9 +127,10 @@ const Form = () => {
           handleBlur,
           handleChange,
           handleSubmit,
+          setValues,
         }) => (
-          <form >
-         {/* </form> <form onSubmit={handleFormSubmit}> */}
+         // <form >
+         <form onSubmit={handleFormSubmit}>
             <Box
               display="grid"
               gap="30px"
@@ -133,11 +143,11 @@ const Form = () => {
                 fullWidth
                 variant="filled"
                 type="text"
-                label="Product name"
-                onBlur={handleBlur}
-                onChange={handleChange}
-                value={values.product_name}
-                name="name"
+                label = "Product name"
+                onBlur = {handleBlur}
+                onChange = {handleChange}
+                value = {values.product_name}
+                name="product_name"
                 sx={{ gridColumn: "span 2" }}
               />
               <FormControl
@@ -186,7 +196,7 @@ const Form = () => {
               />
             </Box>
             
-            {sizes.map((size, index) => (
+            {values.sizes && values.sizes.map((size, index) => (
               <Box
               key={index}
               display="grid"
@@ -225,7 +235,7 @@ const Form = () => {
                   color="secondary"
                   variant="contained"
                   sx={{ gridColumn: "span 1", maxWidth:'30%' }}
-                  onClick={() => handleRemoveSize(index)}
+                  onClick={() => handleRemoveSize(index, values, setValues)}
                 >
                   <DeleteOutlineSharpIcon />
                 </Button>
@@ -235,7 +245,7 @@ const Form = () => {
             </Box>
               
             ))}
-            {imageUrls.map((url, index) => (
+            {values.imageUrls.map((url, index) => (
               <Box
                 key={index}
                 display="grid"
@@ -267,9 +277,12 @@ const Form = () => {
                     border: "1px solid #ffffff",
                   }}
                   onClick={() => {
-                    const updatedUrls = [...imageUrls];
+                    const updatedUrls = [...values.imageUrls];
                     updatedUrls.splice(index, 1);
-                    setImageUrls(updatedUrls);
+                    setValues({
+                      ...values,
+                      imageUrls: updatedUrls,
+                    });
                   }}
                 >
                   <DeleteOutlineSharpIcon />
@@ -300,7 +313,7 @@ const Form = () => {
                 type="button"
                 color="secondary"
                 variant="contained"
-                onClick={handleAddImageUrl}
+                onClick={() => handleAddImageUrl(values, setValues)}
                 sx={{ gridColumn: "span 1", ml: 2, mt: 2 }}
               >
                 Add Image URL
@@ -364,17 +377,10 @@ const Form = () => {
                   type="button"
                   color="secondary"
                   variant="contained"
-                  onClick={() => {
-                    setSizes([
-                      ...sizes,
-                      {
-                        name: currentSize.name,
-                        quantity: currentSize.quantity,
-                      },
-                    ]);
-                    setCurrentSize({ name: "", quantity: "" });
-                    handleCloseModal();
-                  }}
+                  onClick={() => (
+                    handleAddSize(values, setValues),
+                    handleCloseModal()
+                    )}
                 >
                   Add Size
                 </Button>
@@ -382,9 +388,9 @@ const Form = () => {
             </Modal>
             <Box display="flex" justifyContent="end" mt="20px">
               <Button
-              type="button"
-              onClick={() => handleFormSubmit(values)}
-                // type="submit"
+              // type="button"
+              // onClick={() => handleFormSubmit(values)}
+                type="submit"
                 color="secondary"
                 variant="contained"
               >
@@ -416,12 +422,12 @@ const checkoutSchema = yup.object().shape({
 });
 
 const initialValues = {
-  product_name: "",
+  product_name:"",
   category: "shoe",
   description: "",
   price: 0,
-  sizes: [{ name: "", quantity: "" }],
-  imageUrls: [""],
+  sizes: [],
+  imageUrls: [],
 };
 
 export default Form;
