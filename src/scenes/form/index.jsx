@@ -24,11 +24,6 @@ const Form = () => {
 
   const { v4: uuidv4 } = require("uuid");
 
-  // Tạo product_id ngẫu nhiên
-  const productId = uuidv4();
-  const sizeId = uuidv4();
-  const imageId = uuidv4();
-
   const handleOpenModal = () => {
     setOpenModal(true);
   };
@@ -58,35 +53,34 @@ const Form = () => {
       setCurrentImageUrl("");
     }
   };
-  // const handleFormSubmit = async(values) => {
-  //   console.log('submit');
-  // }
+
   const handleFormSubmit = async(values) => {
-    console.log("1111", values);
     try {
-    console.log(22222);
-      const productResponse = await Axios.post('http://localhost:8004/products', {
-        product_id: 'hghhfhghfd',
+      const productId = uuidv4();
+      const productData = {
+        product_id: productId,
         name: values.product_name,
         category: values.category,
         description: values.description,
         price: values.price,
-      });
+      };
+      const productResponse = await Axios.post('http://localhost:8004/products', productData);
       for (const size of values.sizes) {
         await Axios.post('http://localhost:8004/product/size', {
           productId: productId,
           sizeName: size.name,
           quantity: size.quantity,
-          sizeId: sizeId
+          sizeId: uuidv4(),
         });
       }
       for (const imageUrl of values.imageUrls) {
         await Axios.post('http://localhost:8004/product/image', {
-          imageId: imageId,
+          imageId: uuidv4(),
           productId: productId,
           imageUrl: imageUrl,
         });
       }
+      console.log('Product details (including sizes and images) successfully saved.');
     } catch (error) {
       console.error('Error while calling API:', error);
     }
@@ -103,10 +97,10 @@ const Form = () => {
   
 
   const options = [
-    { label: "SHOE", value: "shoe" },
-    { label: "CLOTHES", value: "clothes" },
-    { label: "HANDBAG", value: "handbag" },
-    { label: "ACCESSORY", value: "accessory" },
+    { label: "SHOE", value: "SHOE" },
+    { label: "CLOTHES", value: "CLOTHES" },
+    { label: "HANDBAG", value: "HANDBAG" },
+    { label: "ACCESSORY", value: "ACCESSORY" },
   ];
 
   return (
@@ -129,8 +123,7 @@ const Form = () => {
           handleSubmit,
           setValues,
         }) => (
-         // <form >
-         <form onSubmit={handleFormSubmit}>
+        <form onSubmit={handleSubmit} >
             <Box
               display="grid"
               gap="30px"
@@ -388,8 +381,6 @@ const Form = () => {
             </Modal>
             <Box display="flex" justifyContent="end" mt="20px">
               <Button
-              // type="button"
-              // onClick={() => handleFormSubmit(values)}
                 type="submit"
                 color="secondary"
                 variant="contained"
