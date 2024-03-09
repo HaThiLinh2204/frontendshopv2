@@ -54,7 +54,7 @@ const Form = () => {
     }
   };
 
-  const handleFormSubmit = async(values) => {
+  const handleFormSubmit = async(values, { resetForm }) => {
     try {
       const productId = uuidv4();
       const productData = {
@@ -81,6 +81,18 @@ const Form = () => {
         });
       }
       console.log('Product details (including sizes and images) successfully saved.');
+      resetForm({
+        values: 
+        {
+          product_name:"",
+          category: "SHOE",
+          description: "",
+          price: 0,
+          sizes: [],
+          imageUrls: [],
+        }
+      });
+      console.log('values', values);
     } catch (error) {
       console.error('Error while calling API:', error);
     }
@@ -112,7 +124,7 @@ const Form = () => {
       <Formik
         onSubmit={handleFormSubmit}
         initialValues={initialValues}
-        validationSchema={checkoutSchema}
+      //  validationSchema={checkoutSchema}
       >
         {({
           values,
@@ -414,7 +426,7 @@ const checkoutSchema = yup.object().shape({
 
 const initialValues = {
   product_name:"",
-  category: "shoe",
+  category: "SHOE",
   description: "",
   price: 0,
   sizes: [],

@@ -12,7 +12,7 @@ const Accessory = () => {
   const [accessories, setAccessory] = useState([]);
   useEffect(() => {
     axios
-    .get("http://localhost:8004/products/SHOE")
+    .get("http://localhost:8004/products/ACCESSORY")
     .then((response) => {
       const accessoryWithId = response.data.map((accessory) => ({
         ...accessory,
