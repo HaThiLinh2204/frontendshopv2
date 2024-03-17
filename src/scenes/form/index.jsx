@@ -9,18 +9,63 @@ import { InputLabel } from "@mui/material";
 import { FormControl } from "@mui/material";
 import { display, margin } from "@mui/system";
 import { Box, Button, TextField, Fab, Modal } from "@mui/material";
+import { useParams, useNavigate } from 'react-router-dom';
 import { Formik } from "formik";
 import axios from "axios";
 import DeleteOutlineSharpIcon from "@mui/icons-material/DeleteOutlineSharp";
 
-const Form = () => {
+const Form = ({ mode }) => {
+  const { id } = useParams();
+  const navigate = useNavigate();
   const isNonMobile = useMediaQuery("(min-width:600px)");
   const [openModal, setOpenModal] = React.useState(false);
   const [currentSize, setCurrentSize] = React.useState({
+    sizeId: "",
     name: "",
     quantity: "",
   });
-  const [currentImageUrl, setCurrentImageUrl] = React.useState("");
+  const [currentImageUrl, setCurrentImageUrl] = React.useState({imageId: "", imageUrl: ""});
+  const [initialValues, setInitialValues] = React.useState({
+    product_name:"",
+    category: "SHOE",
+    description: "",
+    price: 0,
+    sizes: [],
+    imageUrls: [],
+  });
+  const [localValues, setLocalValues] = React.useState({});
+
+  React.useEffect(() => {
+    if (mode === 'edit' && id) {
+      axios.get(`http://localhost:8004/product/${id}`)
+        .then(async response => {
+          const productData = response.data;
+          setInitialValues(prevValues => ({
+            ...prevValues,
+            product_name: productData.name,
+            category: productData.category,
+            description: productData.description,
+            price: productData.price,
+          }));
+          const sizesResponse = await axios.get(`http://localhost:8004/product/size/${productData.product_id}`);
+          const sizesData = sizesResponse.data;
+          setInitialValues(prevValues => ({
+            ...prevValues,
+            sizes: sizesData.map(size => ({sizeId:size.sizeId, name: size.sizeName, quantity: size.quantity }))
+          }));
+          const imageUrlsResponse = await axios.get(`http://localhost:8004/product/image/${productData.product_id}`);
+          const imageUrlsData = imageUrlsResponse.data;
+          setInitialValues(prevValues => ({
+            ...prevValues,
+            imageUrls: imageUrlsData.map(image => ({imageId:image.imageId, imageUrl: image.imageUrl}))
+          }));
+        
+        })
+        .catch(error => {
+          console.error('Error fetching product data:', error);
+        });
+    }
+  }, [id, mode]);
 
   const { v4: uuidv4 } = require("uuid");
 
@@ -37,50 +82,171 @@ const Form = () => {
     if (!updatedValues.sizes) {
       updatedValues.sizes = [];
     }
-    updatedValues.sizes.push({ name: currentSize.name, quantity: currentSize.quantity });
+    updatedValues.sizes.push({sizeId: uuidv4(), name: currentSize.name, quantity: currentSize.quantity });
     setValues(updatedValues);
-    setCurrentSize({ name: "", quantity: "" });
+    setCurrentSize({sizeId:"", name: "", quantity: "" });
     handleCloseModal();
   };
   
 
   const handleAddImageUrl = (values, setValues) => {
-    if (currentImageUrl.trim() !== "") {
-      setValues({
-        ...values,
-        imageUrls: [...values.imageUrls, currentImageUrl.trim()]
-      });
-      setCurrentImageUrl("");
+    const updatedValues = { ...values };
+    if (!updatedValues.imageUrls) {
+      updatedValues.imageUrls = [];
     }
+    updatedValues.imageUrls.push({imageId: uuidv4(), imageUrl: currentImageUrl.imageUrl.trim()});
+    setValues(updatedValues);
+    setCurrentImageUrl({imageId: "", imageUrl: ""});
   };
 
   const handleFormSubmit = async(values, { resetForm }) => {
+    const addedSizes = [];
+    const deletedSizes = [];
+    const addedImages = [];
+    const deletedImages = [];
+    setLocalValues(prevValues => ({
+      ...prevValues,
+      initialValues}));
+      console.log('inval11111', initialValues, localValues);
     try {
-      const productId = uuidv4();
-      const productData = {
-        product_id: productId,
-        name: values.product_name,
-        category: values.category,
-        description: values.description,
-        price: values.price,
-      };
-      const productResponse = await Axios.post('http://localhost:8004/products', productData);
-      for (const size of values.sizes) {
-        await Axios.post('http://localhost:8004/product/size', {
-          productId: productId,
-          sizeName: size.name,
-          quantity: size.quantity,
-          sizeId: uuidv4(),
-        });
+      let productData;
+      if (mode === 'edit' && id){
+        productData = {
+          product_id: id,
+          name: values.product_name,
+          category: values.category,
+          description: values.description,
+          price: values.price,
+        };
+        console.log('values', values);
+        console.log('initial', initialValues);
+        const sizesValuesCopy = [...values.sizes];
+    const sizesInitialCopy = [...initialValues.sizes];
+    const imageUrlsValuesCopy = [...values.imageUrls];
+    const imageUrlsInitialCopy = [...initialValues.imageUrls];
+
+    sizesValuesCopy.forEach(size => {
+      const isNewSize = !sizesInitialCopy.some(initialSize => initialSize.sizeId === size.sizeId);
+      if (isNewSize) {
+        addedSizes.push(size);
       }
-      for (const imageUrl of values.imageUrls) {
-        await Axios.post('http://localhost:8004/product/image', {
-          imageId: uuidv4(),
-          productId: productId,
-          imageUrl: imageUrl,
-        });
+    });
+
+    sizesInitialCopy.forEach(initialSize => {
+      const isDeletedSize = !sizesValuesCopy.some(size => size.sizeId === initialSize.sizeId);
+      if (isDeletedSize) {
+        deletedSizes.push(initialSize.sizeId);
       }
-      console.log('Product details (including sizes and images) successfully saved.');
+    });
+
+    imageUrlsValuesCopy.forEach(image => {
+      const isNewImage = !imageUrlsInitialCopy.some(initialImage => initialImage.imageId === image.imageId);
+      if (isNewImage) {
+        addedImages.push(image);
+      }
+    });
+
+    imageUrlsInitialCopy.forEach(initialImage => {
+      const isDeletedImage = !imageUrlsValuesCopy.some(image => image.imageId === initialImage.imageId);
+      if (isDeletedImage) {
+        deletedImages.push(initialImage.imageId);
+      }
+    });
+        // values.sizes.forEach(size => {
+        //   const isNewSize = !initialValues.sizes.some(initialSize => initialSize.sizeId === size.sizeId);
+        //   if (isNewSize) {
+        //     addedSizes.push(size);
+        //   }
+        // });
+        // initialValues.sizes.forEach(initialSize => {
+        //   const isDeletedSize = !values.sizes.some(size => size.sizeId === initialSize.sizeId);
+        //   if (isDeletedSize) {
+        //     deletedSizes.push(initialSize.sizeId);
+        //   }
+        // });
+
+        // values.imageUrls.forEach(image => {
+        //   const isNewImage = !initialValues.imageUrls.some(initialImage => initialImage.imageId === image.imageId);
+        //   if (isNewImage) {
+        //     addedImages.push(image);
+        //   }
+        // });
+        // initialValues.imageUrls.forEach(initialImage => {
+        //   const isDeletedImage = !values.imageUrls.some(image => image.imageId === initialImage.imageId);
+        //   if (isDeletedImage) {
+        //     deletedImages.push(initialImage.imageId);
+        //   }
+        // });
+        console.log('addedSizes',addedSizes,'addedImages', addedImages);
+        const performChanges = async () => {
+          console.log('addedSizes',addedSizes,'addedImages', addedImages);
+          const productResponse = await Axios.put('http://localhost:8004/products', productData);
+          if (deletedSizes.length) {
+            await Promise.all(
+              deletedSizes.map(async (sizeId) => {
+                await axios.delete(`http://localhost:8004/product/size/${sizeId}`);
+              })
+            );
+          }
+        
+          if (deletedImages.length) {
+            await Promise.all(
+              deletedImages.map(async (imageId) => {
+                await axios.delete(`http://localhost:8004/product/image/${imageId}`);
+              })
+            );
+          }
+
+          await Promise.all(
+            addedSizes.map(async (size) => {
+              await axios.post(`http://localhost:8004/product/size`, size);
+            })
+          );
+        
+          await Promise.all(
+            addedImages.map(async (image) => {
+              await axios.post(`http://localhost:8004/product/image`, image);
+            })
+          );
+        };
+        
+        // performChanges()
+        //   .then(() => {
+        //     console.log("Thay đổi đã được thực hiện thành công!");
+        //   })
+        //   .catch(error => {
+        //     console.error("Đã xảy ra lỗi khi thực hiện thay đổi:", error);
+        //   });
+        console.log('Product details (including sizes and images) successfully saved.');
+        navigate(`/form`);
+      }
+      else {
+        const productId = uuidv4();
+        productData = {
+          product_id: productId,
+          name: values.product_name,
+          category: values.category,
+          description: values.description,
+          price: values.price,
+        };
+        const productResponse = await Axios.post('http://localhost:8004/products', productData);
+        for (const size of values.sizes) {
+          await Axios.post('http://localhost:8004/product/size', {
+            productId: productId,
+            sizeName: size.name,
+            quantity: size.quantity,
+            sizeId: size.sizeId,
+          });
+        }
+        for (const image of values.imageUrls) {
+          await Axios.post('http://localhost:8004/product/image', {
+            imageId: image.imageId,
+            productId: productId,
+            imageUrl: image.imageUrl,
+          });
+        }
+        console.log('Product details (including sizes and images) successfully saved.');
+      }
       resetForm({
         values: 
         {
@@ -118,12 +284,13 @@ const Form = () => {
   return (
     <Box m="20px">
       <Header
-        title="ADD PRODUCT"
-        subtitle="Create a new product with size and image"
+        title={mode === 'edit' ? "EDIT PRODUCT" : "ADD NEW PRODUCT"}
+        subtitle={mode === 'edit' ? "Edit existing product details" : "Create a new product with size and image"}
       />
       <Formik
-        onSubmit={handleFormSubmit}
-        initialValues={initialValues}
+        onSubmit = { handleFormSubmit }
+        initialValues = { initialValues }
+        enableReinitialize = { true }
       //  validationSchema={checkoutSchema}
       >
         {({
@@ -134,6 +301,7 @@ const Form = () => {
           handleChange,
           handleSubmit,
           setValues,
+          resetForm,
         }) => (
         <form onSubmit={handleSubmit} >
             <Box
@@ -201,7 +369,7 @@ const Form = () => {
               />
             </Box>
             
-            {values.sizes && values.sizes.map((size, index) => (
+            {Array.isArray(values.sizes) && values.sizes.map((size, index) => (
               <Box
               key={index}
               display="grid"
@@ -250,7 +418,7 @@ const Form = () => {
             </Box>
               
             ))}
-            {values.imageUrls.map((url, index) => (
+            {Array.isArray(values.imageUrls) && values.imageUrls.map((img, index) => (
               <Box
                 key={index}
                 display="grid"
@@ -261,7 +429,7 @@ const Form = () => {
                 }}
               >
                 <img
-                  src={url}
+                  src={img.imageUrl}
                   alt={`Image ${index + 1}`}
                  // sx={{ gridColumn: "span 1" }}
                   style={{
@@ -309,8 +477,8 @@ const Form = () => {
                 type="text"
                 label="Image URL"
                 onBlur={handleBlur}
-                onChange={(e) => setCurrentImageUrl(e.target.value)}
-                value={currentImageUrl}
+                onChange={(e) => setCurrentImageUrl({ ...currentImageUrl, imageUrl: e.target.value })}
+                value={currentImageUrl.imageUrl}
                 name="newImageUrl"
                 sx={{ gridColumn: "span 2" }}
               />
@@ -397,7 +565,7 @@ const Form = () => {
                 color="secondary"
                 variant="contained"
               >
-                Create New Product
+                {mode === 'edit' ? "Save Changes" : "Create New Product"}
               </Button>
             </Box>
           </form>
@@ -423,14 +591,5 @@ const checkoutSchema = yup.object().shape({
   description: yup.string().required("required"),
   price: yup.number().required("required"),
 });
-
-const initialValues = {
-  product_name:"",
-  category: "SHOE",
-  description: "",
-  price: 0,
-  sizes: [],
-  imageUrls: [],
-};
 
 export default Form;

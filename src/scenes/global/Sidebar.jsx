@@ -109,7 +109,7 @@ const Sidebar = () => {
           <Box paddingLeft={isCollapsed ? undefined : "10%"}>
             <Item
               title="HOME"
-              to="/"
+              to="/admin"
               icon={<HomeOutlinedIcon />}
               selected={selected}
               setSelected={setSelected}
@@ -124,28 +124,28 @@ const Sidebar = () => {
             </Typography>
             <Item
               title="Shoe"
-              to="/shoes"
+              to="/admin/shoes"
               icon={<HiveOutlinedIcon />}
               selected={selected}
               setSelected={setSelected}
             />
             <Item
               title="Clothes"
-              to="/clothes"
+              to="/admin/clothes"
               icon={<LightModeOutlinedIcon />}
               selected={selected}
               setSelected={setSelected}
             />
             <Item
               title="Handbag"
-              to="/handbags"
+              to="/admin/handbags"
               icon={<ShoppingBagOutlinedIcon />}
               selected={selected}
               setSelected={setSelected}
             />
             <Item
               title="Accessory"
-              to="/accessory"
+              to="/admin/accessory"
               icon={<GamepadOutlinedIcon />}
               selected={selected}
               setSelected={setSelected}
@@ -160,14 +160,14 @@ const Sidebar = () => {
             </Typography>
             <Item
               title="Product form"
-              to="/form"
+              to="/admin/form"
               icon={<PersonOutlinedIcon />}
               selected={selected}
               setSelected={setSelected}
             />
             <Item
               title="FAQ Page"
-              to="/faq"
+              to="/admin/faq"
               icon={<HelpOutlineOutlinedIcon />}
               selected={selected}
               setSelected={setSelected}

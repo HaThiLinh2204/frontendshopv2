@@ -8,6 +8,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import Header from "../../components/Header";
 import { useTheme } from "@mui/material";
+import { useNavigate } from 'react-router-dom';
 
 const Clothes = () => {
   const theme = useTheme();
@@ -15,6 +16,7 @@ const Clothes = () => {
   const [clothes, setClothes] = useState([]);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [deleteItemId, setDeleteItemId] = useState(null);
+  const navigate = useNavigate();
 
   // 
   useEffect(() => {
@@ -41,6 +43,8 @@ const Clothes = () => {
   }, []);
 
   const handleEdit = (id) => {
+    // navigate(`/edit/${id}`);
+    navigate(`/form/${id}/edit`);
     // Xử lý logic chỉnh sửa dựa trên dữ liệu hàng row
   };
   
@@ -72,7 +76,7 @@ const Clothes = () => {
     { field: "product_id", headerName: "ID", flex: 0.5 },
     { field: "name",headerName: "Name",flex: 1,},
     { field: "category",headerName: " Category", flex: 1, headerAlign: "left", align: "left",},
-    { field: "description", headerName: "Description", flex: 1 }, 
+    { field: "description", headerName: "Description", flex: 2 }, 
     { field: "price", headerName: "Price", flex: 1 },
     { field: "totalQuantity", headerName: "Total", flex: 1},
     {

@@ -1,0 +1,116 @@
+.header-page {
+    /* padding: 0 25px; */
+    /* position: fixed;
+    top: 0;
+    left: 0; */
+    position: fixed;
+     top: 0;
+     left: 0;
+     width: 100%;
+     z-index: 99999;
+  }
+  .header-page .topbar {
+    background: #f2f2f2;
+    font-size: 14px;
+    padding: 10px 0;
+    display: flex;
+  }
+  .header-page .topbar .leftbar,
+  .rightbar {
+    width: 50%;
+  }
+  
+  .header-page .leftbar {
+    display: flex;
+    flex-direction: row;
+  }
+  .header-page .leftbar p {
+    width: 70%;
+    font-weight: bold;
+  }
+  
+  .header-page .leftbar .header-icon {
+    text-align: center;
+    padding: 14px 10px;
+  }
+  
+  .header-page .rightbar {
+    display: flex;
+    flex-direction: row-reverse;
+  }
+  
+  .header-page .rightbar i {
+    width: 16%;
+    text-align: center;
+    padding: 14px 10px;
+    font-weight: bold;
+    display: flex;
+  }
+  .header-page .rightbar i a {
+    text-decoration: none;
+    color: #000000;
+  }
+  .header-page .rightbar i svg {
+    height: 20px;
+    width: 20px;
+  }
+  
+  .header-page .rightbar i p {
+    padding: 0px 5px;
+    margin: 0;
+  }
+  
+  .header-page .downbar {
+    display: flex;
+    background-color: #fff;
+  }
+  
+  .header-page .header {
+    width: 15%;
+    padding: 20px;
+    color: #000000;
+  }
+  
+  .header-page .title-page {
+    margin: 0;
+    font-size: 50px;
+    color: #252a2b;
+    text-decoration: none;
+  }
+  
+  .header-page .tabbar {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    padding: 10px;
+    width: 50%;
+  }
+  
+  .header-page .tabbar .menu-tab {
+    display: flex;
+    justify-content: space-around;
+  }
+  
+  .header-page .tabbar .menu-tab .menu-tab-item {
+    margin: auto 15px;
+    color: #000000;
+    /* height: 30px; */
+    padding: 10px;
+  }
+  .header-page .tabbar .menu-tab .menu-tab-item:hover {
+    /* text-decoration: underline; */
+    border-bottom: 2px solid black;
+  }
+  .header-page .menu-tab-item a {
+    color: #252a2b;
+    position: relative;
+    text-transform: uppercase;
+    font-weight: 700;
+    text-decoration: none;
+    opacity: 0.95;
+  }
+  .header-page .menu-tab-item a:hover {
+    opacity: 1;
+    font-weight: 710;
+  }
+  
