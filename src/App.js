@@ -4,20 +4,21 @@ import { useState } from "react";
 import { CssBaseline, ThemeProvider } from "@mui/material";
 import { ColorModeContext, useMode } from "./theme";
 import { BrowserRouter as Router, Route, Routes, useLocation } from "react-router-dom";
-import Topbar from "./scenes/global/Topbar";
-import Dashboard from "./scenes/dashboard";
-import Clothes from "./scenes/clothes";
-import Sidebar from "./scenes/global/Sidebar";
-import Form from "./scenes/form";
-import Handbag from "./scenes/handbag";
-import Accessory from "./scenes/accessory";
-import Shoes from './scenes/shoe';
-import Main from "./scenes/main";
-import HeaderUser from './components/headerUser/HeaderUser';
-import FooterUser from './components/footerUser/FooterUser'
-import HomePage from './pages/homePageUser/HomePage';
-import ShoeList from './pages/listProductUser/shoeList/ShoeList';
-import ProductDetail from './pages/listProductUser/productDetail';
+import Topbar from "./admin/scenes/global/Topbar";
+import Dashboard from "./admin/scenes/dashboard";
+import Clothes from "./admin/scenes/clothes";
+import Sidebar from "./admin/scenes/global/Sidebar";
+import Form from "./admin/scenes/form";
+import Handbag from "./admin/scenes/handbag";
+import Accessory from "./admin/scenes/accessory";
+import Shoes from './admin/scenes/shoe';
+import Main from "./admin/scenes/main";
+import HeaderUser from './user/components/headerUser/HeaderUser';
+import FooterUser from './user/components/footerUser/FooterUser'
+import HomePage from './user/pages/homePageUser/HomePage';
+import ShoeList from './user/pages/listProductUser/shoeList/ShoeList';
+import ProductDetail from './user/pages/listProductUser/productDetail';
+import ClothesList from './user/pages/listProductUser/clothesList/ClothesList';
 
 function App() {
   const [theme, colorMode] = useMode();
@@ -75,9 +76,10 @@ function AppContent() {
           {/* <Route path="login" element={<Login />} />
           <Route path="/register" element={<Register />} /> */}
           <Route path="/user/shoes" element={<ShoeList />} />
-          <Route path="/products/:id" element={<ProductDetail />} /> 
+          <Route path="/products/:id" element={<ProductDetail />} />
+          <Route path="/user/clothes" element={<ClothesList />}/>
           {/* <Route path="/tui" element={<Tui />} />
-          <Route path="/phukien" element={<PhuKien />} />
+          <Route path="/user/clothes" element={<PhuKien />} />
           
           */}
         </Routes>
