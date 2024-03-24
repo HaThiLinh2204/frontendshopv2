@@ -21,7 +21,7 @@ const Form = ({ mode }) => {
   const [openModal, setOpenModal] = React.useState(false);
   const [currentSize, setCurrentSize] = React.useState({
     sizeId: "",
-    name: "",
+    sizeName: "",
     quantity: "",
   });
   const [currentImageUrl, setCurrentImageUrl] = React.useState({imageId: "", imageUrl: ""});
@@ -33,8 +33,6 @@ const Form = ({ mode }) => {
     sizes: [],
     imageUrls: [],
   });
-  const [localValues, setLocalValues] = React.useState({});
-
   React.useEffect(() => {
     if (mode === 'edit' && id) {
       axios.get(`http://localhost:8004/product/${id}`)
@@ -51,15 +49,16 @@ const Form = ({ mode }) => {
           const sizesData = sizesResponse.data;
           setInitialValues(prevValues => ({
             ...prevValues,
-            sizes: sizesData.map(size => ({sizeId:size.sizeId, name: size.sizeName, quantity: size.quantity }))
+            sizes: sizesData.map(size => ({sizeId:size.sizeId, sizeName: size.sizeName, quantity: size.quantity }))
           }));
+          sessionStorage.setItem('listCurrentSizes', JSON.stringify(sizesData));
           const imageUrlsResponse = await axios.get(`http://localhost:8004/product/image/${productData.product_id}`);
           const imageUrlsData = imageUrlsResponse.data;
           setInitialValues(prevValues => ({
             ...prevValues,
             imageUrls: imageUrlsData.map(image => ({imageId:image.imageId, imageUrl: image.imageUrl}))
           }));
-        
+          sessionStorage.setItem('listCurrentImages', JSON.stringify(imageUrlsData))
         })
         .catch(error => {
           console.error('Error fetching product data:', error);
@@ -82,9 +81,9 @@ const Form = ({ mode }) => {
     if (!updatedValues.sizes) {
       updatedValues.sizes = [];
     }
-    updatedValues.sizes.push({sizeId: uuidv4(), name: currentSize.name, quantity: currentSize.quantity });
+    updatedValues.sizes.push({sizeId: uuidv4(), sizeName: currentSize.sizeName, quantity: currentSize.quantity });
     setValues(updatedValues);
-    setCurrentSize({sizeId:"", name: "", quantity: "" });
+    setCurrentSize({sizeId:"", sizeName: "", quantity: "" });
     handleCloseModal();
   };
   
@@ -104,10 +103,6 @@ const Form = ({ mode }) => {
     const deletedSizes = [];
     const addedImages = [];
     const deletedImages = [];
-    setLocalValues(prevValues => ({
-      ...prevValues,
-      initialValues}));
-      console.log('inval11111', initialValues, localValues);
     try {
       let productData;
       if (mode === 'edit' && id){
@@ -118,68 +113,41 @@ const Form = ({ mode }) => {
           description: values.description,
           price: values.price,
         };
-        console.log('values', values);
-        console.log('initial', initialValues);
         const sizesValuesCopy = [...values.sizes];
-    const sizesInitialCopy = [...initialValues.sizes];
-    const imageUrlsValuesCopy = [...values.imageUrls];
-    const imageUrlsInitialCopy = [...initialValues.imageUrls];
+        const imageUrlsValuesCopy = [...values.imageUrls];
+        const listCurrentImages = [...JSON.parse(sessionStorage.getItem('listCurrentImages'))];
+        const listCurrentSizes = [...JSON.parse(sessionStorage.getItem('listCurrentSizes'))];
+        console.log('sizesValuesCopy', sizesValuesCopy,'imageUrlsValuesCopy', imageUrlsValuesCopy );
+        console.log('local',listCurrentImages, listCurrentSizes);
+        sizesValuesCopy.forEach(size => {
+          const isNewSize = !listCurrentSizes.some(initialSize => initialSize.sizeId === size.sizeId);
+          if (isNewSize) {
+            addedSizes.push(size);
+          }
+        });
 
-    sizesValuesCopy.forEach(size => {
-      const isNewSize = !sizesInitialCopy.some(initialSize => initialSize.sizeId === size.sizeId);
-      if (isNewSize) {
-        addedSizes.push(size);
-      }
-    });
+        listCurrentSizes.forEach(initialSize => {
+          const isDeletedSize = !sizesValuesCopy.some(size => size.sizeId === initialSize.sizeId);
+          if (isDeletedSize) {
+            deletedSizes.push(initialSize.sizeId);
+          }
+        });
 
-    sizesInitialCopy.forEach(initialSize => {
-      const isDeletedSize = !sizesValuesCopy.some(size => size.sizeId === initialSize.sizeId);
-      if (isDeletedSize) {
-        deletedSizes.push(initialSize.sizeId);
-      }
-    });
+        imageUrlsValuesCopy.forEach(image => {
+          const isNewImage = !listCurrentImages.some(initialImage => initialImage.imageId === image.imageId);
+          if (isNewImage) {
+            addedImages.push(image);
+          }
+        });
 
-    imageUrlsValuesCopy.forEach(image => {
-      const isNewImage = !imageUrlsInitialCopy.some(initialImage => initialImage.imageId === image.imageId);
-      if (isNewImage) {
-        addedImages.push(image);
-      }
-    });
-
-    imageUrlsInitialCopy.forEach(initialImage => {
-      const isDeletedImage = !imageUrlsValuesCopy.some(image => image.imageId === initialImage.imageId);
-      if (isDeletedImage) {
-        deletedImages.push(initialImage.imageId);
-      }
-    });
-        // values.sizes.forEach(size => {
-        //   const isNewSize = !initialValues.sizes.some(initialSize => initialSize.sizeId === size.sizeId);
-        //   if (isNewSize) {
-        //     addedSizes.push(size);
-        //   }
-        // });
-        // initialValues.sizes.forEach(initialSize => {
-        //   const isDeletedSize = !values.sizes.some(size => size.sizeId === initialSize.sizeId);
-        //   if (isDeletedSize) {
-        //     deletedSizes.push(initialSize.sizeId);
-        //   }
-        // });
-
-        // values.imageUrls.forEach(image => {
-        //   const isNewImage = !initialValues.imageUrls.some(initialImage => initialImage.imageId === image.imageId);
-        //   if (isNewImage) {
-        //     addedImages.push(image);
-        //   }
-        // });
-        // initialValues.imageUrls.forEach(initialImage => {
-        //   const isDeletedImage = !values.imageUrls.some(image => image.imageId === initialImage.imageId);
-        //   if (isDeletedImage) {
-        //     deletedImages.push(initialImage.imageId);
-        //   }
-        // });
-        console.log('addedSizes',addedSizes,'addedImages', addedImages);
+        listCurrentImages.forEach(initialImage => {
+          const isDeletedImage = !imageUrlsValuesCopy.some(image => image.imageId === initialImage.imageId);
+          if (isDeletedImage) {
+            deletedImages.push(initialImage.imageId);
+          }
+        });
+        
         const performChanges = async () => {
-          console.log('addedSizes',addedSizes,'addedImages', addedImages);
           const productResponse = await Axios.put('http://localhost:8004/products', productData);
           if (deletedSizes.length) {
             await Promise.all(
@@ -199,25 +167,28 @@ const Form = ({ mode }) => {
 
           await Promise.all(
             addedSizes.map(async (size) => {
-              await axios.post(`http://localhost:8004/product/size`, size);
+              await axios.post(`http://localhost:8004/product/size`, {
+                productId: id,
+                ...size});
             })
           );
         
           await Promise.all(
             addedImages.map(async (image) => {
-              await axios.post(`http://localhost:8004/product/image`, image);
+              await axios.post(`http://localhost:8004/product/image`, {
+                productId: id,
+                ...image});
             })
           );
         };
         
-        // performChanges()
-        //   .then(() => {
-        //     console.log("Thay đổi đã được thực hiện thành công!");
-        //   })
-        //   .catch(error => {
-        //     console.error("Đã xảy ra lỗi khi thực hiện thay đổi:", error);
-        //   });
-        console.log('Product details (including sizes and images) successfully saved.');
+        performChanges()
+          .then(() => {
+            console.log("Thay đổi đã được thực hiện thành công!");
+          })
+          .catch(error => {
+            console.error("Đã xảy ra lỗi khi thực hiện thay đổi:", error);
+          });
         navigate(`/admin/form`);
       }
       else {
@@ -233,7 +204,7 @@ const Form = ({ mode }) => {
         for (const size of values.sizes) {
           await Axios.post('http://localhost:8004/product/size', {
             productId: productId,
-            sizeName: size.name,
+            sizeName: size.sizeName,
             quantity: size.quantity,
             sizeId: size.sizeId,
           });
@@ -258,7 +229,6 @@ const Form = ({ mode }) => {
           imageUrls: [],
         }
       });
-      console.log('values', values);
     } catch (error) {
       console.error('Error while calling API:', error);
     }
@@ -395,7 +365,7 @@ const Form = ({ mode }) => {
                   variant="filled"
                   sx={{ gridColumn: "span 1", fontSize: "15px" }}
                 >
-                  Name: {size.name}
+                  Name: {size.sizeName}
                 </Typography>
                 <Typography
                   variant="filled"
@@ -526,10 +496,10 @@ const Form = ({ mode }) => {
                   label="Size name"
                   onBlur={handleBlur}
                   onChange={(e) =>
-                    setCurrentSize({ ...currentSize, name: e.target.value })
+                    setCurrentSize({ ...currentSize, sizeName: e.target.value })
                   }
-                  value={currentSize.name}
-                  name="newSize.name"
+                  value={currentSize.sizeName}
+                  name="newSize.sizeName"
                   sx={{ mb: 2 }}
                 />
                 <TextField

@@ -18,7 +18,6 @@ const Clothes = () => {
   const [deleteItemId, setDeleteItemId] = useState(null);
   const navigate = useNavigate();
 
-  // 
   useEffect(() => {
     const fetchProductsWithTotalQuantity = async () => {
       try {
@@ -43,9 +42,7 @@ const Clothes = () => {
   }, []);
 
   const handleEdit = (id) => {
-    // navigate(`/edit/${id}`);
     navigate(`/admin/form/${id}/edit`);
-    // Xử lý logic chỉnh sửa dựa trên dữ liệu hàng row
   };
   
   const handleDeleteClick = (id) => {
