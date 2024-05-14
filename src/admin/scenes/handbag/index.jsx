@@ -75,6 +75,7 @@ const Handbag = () => {
     { field: "category",headerName: " Category", flex: 1, headerAlign: "left", align: "left",},
     { field: "description", headerName: "Description", flex: 2 }, 
     { field: "price", headerName: "Price", flex: 1 },
+    { field: "saleprice", headerName: "Saleprice", flex: 1 },
     { field: "totalQuantity", headerName: "Total", flex: 1},
     {
       field: "actions",

@@ -30,6 +30,7 @@ const Form = ({ mode }) => {
     category: "SHOE",
     description: "",
     price: 0,
+    saleprice: 0,
     sizes: [],
     imageUrls: [],
   });
@@ -44,6 +45,7 @@ const Form = ({ mode }) => {
             category: productData.category,
             description: productData.description,
             price: productData.price,
+            saleprice:productData.saleprice
           }));
           const sizesResponse = await axios.get(`http://localhost:8004/product/size/${productData.product_id}`);
           const sizesData = sizesResponse.data;
@@ -112,6 +114,7 @@ const Form = ({ mode }) => {
           category: values.category,
           description: values.description,
           price: values.price,
+          saleprice: values.saleprice
         };
         const sizesValuesCopy = [...values.sizes];
         const imageUrlsValuesCopy = [...values.imageUrls];
@@ -199,6 +202,7 @@ const Form = ({ mode }) => {
           category: values.category,
           description: values.description,
           price: values.price,
+          saleprice: values.saleprice
         };
         const productResponse = await Axios.post('http://localhost:8004/products', productData);
         for (const size of values.sizes) {
@@ -225,6 +229,7 @@ const Form = ({ mode }) => {
           category: "SHOE",
           description: "",
           price: 0,
+          saleprice: 0,          
           sizes: [],
           imageUrls: [],
         }
@@ -324,6 +329,17 @@ const Form = ({ mode }) => {
                 onChange={handleChange}
                 value={values.price}
                 name="price"
+                sx={{ gridColumn: "span 2" }}
+              />
+              <TextField
+                fullWidth
+                variant="filled"
+                type="number"
+                label="Sale Price"
+                onBlur={handleBlur}
+                onChange={handleChange}
+                value={values.saleprice}
+                name="saleprice"
                 sx={{ gridColumn: "span 2" }}
               />
               <TextField

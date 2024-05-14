@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
-import { BsFillTelephonePlusFill, BsFillCartPlusFill } from "react-icons/bs";
 import "./Header.css";
 import { useLocation } from "react-router-dom";
+import axios from "axios";
+import { useCartItemCount } from "../../service/CartItemCountContext";
 
 function HeaderUser() {
   const location = useLocation();
@@ -9,8 +10,10 @@ function HeaderUser() {
   const handleTabClick = (tab) => {
     setSelectedTab(tab);
   };
+  const { cartItemCount, setCartItemCount } = useCartItemCount();
 
   useEffect(() => {
+    const userId = parseInt(localStorage.getItem("user_id"));
     const path = location.pathname;
     switch (path) {
       case "/user/homepage":
@@ -35,75 +38,86 @@ function HeaderUser() {
         setSelectedTab("home");
         break;
     }
+    if (!userId) {
+      alert("Vui lòng đăng nhập để thêm sản phẩm vào giỏ hàng.");
+      return;
+    }
+    axios
+      .get(`http://localhost:8004/cart/${userId}/items/count`)
+      .then((response) => {
+        setCartItemCount(response.data);
+      })
+      .catch((error) => {
+        console.error("Error fetching cart item count:", error);
+      });
   }, [location.pathname]);
 
   return (
     <div className="header-page">
-      <div className="topbar">
-        <div className="leftbar">
-          <div className="header-icon">
-            {" "}
-            <BsFillTelephonePlusFill />
+      <div className="header-title">
+        <a href="/" className="title-page">
+          FURLA
+        </a>
+      </div>
+      <div className="tabbar header-tab">
+        <div className="menu-tab">
+          <div
+            className={`menu-tab-item ${
+              selectedTab === "home" ? "active" : ""
+            }`}
+            onClick={() => handleTabClick("home")}
+          >
+            <a href="/user/homepage">TRANG CHỦ</a>
           </div>
-          <p>Địa chỉ 102 Thái Thịnh, Đống Đam Hà Nội - Hottline: 1900.2812</p>
-        </div>
-        <div className="rightbar">
-          <i className="">
-            <BsFillCartPlusFill />
-            <p>Giỏ hàng </p>
-          </i>
-          <i className="">
-            {/* <PermIdentityIcon /> */}
-            <a href="/login">Tài khoản</a>
-          </i>
+          <div
+            className={`menu-tab-item ${
+              selectedTab === "shoes" ? "active" : ""
+            }`}
+            onClick={() => handleTabClick("shoes")}
+          >
+            <a href="/user/shoes">GIÀY</a>
+          </div>
+          <div
+            className={`menu-tab-item ${
+              selectedTab === "handbag" ? "active" : ""
+            }`}
+            onClick={() => handleTabClick("handbag")}
+          >
+            <a href="/user/handbag">TÚI</a>
+          </div>
+          <div
+            className={`menu-tab-item ${
+              selectedTab === "accessory" ? "active" : ""
+            }`}
+            onClick={() => handleTabClick("accessory")}
+          >
+            <a href="/user/accessory">PHỤ KIỆN</a>
+          </div>
+          <div
+            className={`menu-tab-item ${
+              selectedTab === "clothes" ? "active" : ""
+            }`}
+            onClick={() => handleTabClick("clothes")}
+          >
+            <a href="/user/clothes">QUẦN ÁO</a>
+          </div>
+          <div
+            className={`menu-tab-item ${
+              selectedTab === "customer" ? "active" : ""
+            }`}
+            onClick={() => handleTabClick("customer")}
+          >
+            <a href="/user/customer">CUSTOMER</a>
+          </div>
         </div>
       </div>
-      <div className="downbar">
-        <div className="header">
-          <a href="/" className="title-page">
-            FURLA
-          </a>
-        </div>
-        <div className="tabbar header-tab">
-          <div className="menu-tab">
-            <div
-              className={`menu-tab-item ${selectedTab === "home" ? "active" : ""}`}
-              onClick={() => handleTabClick("home")}
-            >
-              <a href="/user/homepage">TRANG CHỦ</a>
-            </div>
-            <div
-              className={`menu-tab-item ${selectedTab === "shoes" ? "active" : ""}`}
-              onClick={() => handleTabClick("shoes")}
-            >
-              <a href="/user/shoes">GIÀY</a>
-            </div>
-            <div
-              className={`menu-tab-item ${selectedTab === "handbag" ? "active" : ""}`}
-              onClick={() => handleTabClick("handbag")}
-            >
-              <a href="/user/handbag">TÚI</a>
-            </div>
-            <div
-              className={`menu-tab-item ${selectedTab === "accessory" ? "active" : ""}`}
-              onClick={() => handleTabClick("accessory")}
-            >
-              <a href="/user/accessory">PHỤ KIỆN</a>
-            </div>
-            <div
-              className={`menu-tab-item ${selectedTab === "clothes" ? "active" : ""}`}
-              onClick={() => handleTabClick("clothes")}
-            >
-              <a href="/user/clothes">QUẦN ÁO</a>
-            </div>
-            <div
-              className={`menu-tab-item ${selectedTab === "customer" ? "active" : ""}`}
-              onClick={() => handleTabClick("customer")}
-            >
-              <a href="/user/customer">CUSTOMER</a>
-            </div>
-          </div>
-        </div>
+      <div className="rightbar">
+        <a href="/login" className="user">
+          <p>Tài khoản</p>
+        </a>
+        <a className="cart" href="/user/cart">
+          <p>Giỏ hàng: ({cartItemCount}) </p>
+        </a>
       </div>
     </div>
   );

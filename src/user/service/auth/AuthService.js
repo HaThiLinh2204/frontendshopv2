@@ -1,13 +1,14 @@
-import React from "react";
-import { useState } from "react";
+import React, { useState } from "react";
 import { useNavigate } from 'react-router-dom';
+import { Observable, of } from 'rxjs';
 
 function AuthService() {
   const apiUrl = 'http://localhost:8004/auth';
   const [loggedIn, setLoggedIn] = useState(false);
   const navigate = useNavigate();
+  const [email, setEmail] = useState('');
 
-  const login = async (email, password) => {
+  const login = async (email, password, callback) => {
     try {
       const response = await fetch(`${apiUrl}/login`, {
         method: 'POST',
@@ -15,25 +16,29 @@ function AuthService() {
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({ email, password })
-      });
-
+      })
       if (response.ok) {
         const data = await response.json();
-        console.log('User ID:', data.user.id);
         localStorage.setItem('access_token', data.jwt);
         localStorage.setItem('user_id', data.user.id);
-        setLoggedIn(true);
-        navigate('/home'); // Điều hướng đến trang sau khi đăng nhập thành công
+        localStorage.setItem('isLogin', true);
+        localStorage.setItem('role',data.user.authorities[0].authority);
+        if (data.user.authorities.some(authority => authority.authority === 'ADMIN')) {
+          navigate('/admin');
+        } else {
+          navigate('/user/homepage');
+        }
+        callback(null, data);
       } else {
-        // Xử lý trường hợp lỗi đăng nhập
-        console.error('Login error:', response.statusText);
-        // Hiển thị thông báo lỗi cho người dùng
+        console.error('Lỗi đăng nhập:', response.statusText);
+        callback(response.statusText, null);
       }
     } catch (error) {
-      console.error('Login error:', error);
-      // Xử lý trường hợp lỗi không mong muốn
+      console.error('Lỗi đăng nhập:', error);
+      callback(error, null);
     }
   };
+  
 
   const register = async (email, password) => {
     try {
@@ -48,13 +53,10 @@ function AuthService() {
       if (response.ok) {
         // Đăng ký thành công
       } else {
-        // Xử lý trường hợp lỗi đăng ký
-        console.error('Register error:', response.statusText);
-        // Hiển thị thông báo lỗi cho người dùng
+        console.error('Lỗi đăng ký:', response.statusText);
       }
     } catch (error) {
-      console.error('Register error:', error);
-      // Xử lý trường hợp lỗi không mong muốn
+      console.error('Lỗi đăng ký:', error);
     }
   };
 

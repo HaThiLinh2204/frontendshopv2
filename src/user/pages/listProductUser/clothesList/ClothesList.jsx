@@ -114,14 +114,14 @@ function ClothesList() {
           <div className="container-page">
             {filteredproducts.map((product) => (
               <div className="container-item" key={product.product_id}>
-                <Link to={`/products/${product.product_id}`}>
+                <Link to={`/user/products/${product.product_id}`}>
                     <img
                       src={product.imageUrl}
                       alt={`Ảnh của giày ${product.name}`}
                     />
-
                   <div className="item-name">{product.name}</div>
                   <div className="item-price">{product.price}đ</div>
+                  <button>Thêm vào giỏ hàng</button>
                 </Link>
               </div>
             ))}

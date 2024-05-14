@@ -1,1 +1,2 @@
 - tạo loading khi chuyển trang
+- sử dụng Context, cái file service để truyền dữ liệu

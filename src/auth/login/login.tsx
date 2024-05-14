@@ -1,23 +1,23 @@
-import React, { useState } from "react";
-import { useNavigate } from 'react-router-dom';
-import "./login.css";
+import React, { useState } from 'react';
+import './login.css';
+import { Link } from 'react-router-dom';
 import AuthService from '../../user/service/auth/AuthService';
 
-function Login() {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
-  const authService = AuthService();
-  const navigate = useNavigate();
- 
 
-  const handleLogin = async () => {
-    try {
-      await authService.login(email, password);
-      navigate('/home');
-    } catch (error) {
-      setError("Invalid email or password");
-    }
+function Login({isLoggedIn, role, setIsLoggedIn, setRole}) {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const authService = new AuthService();
+  const handleLogin = () => {
+    authService.login(email, password, (error, data) => {
+      if (error) {
+        setIsLoggedIn(localStorage.getItem('isLogin'));
+        setRole(localStorage.getItem('role'));
+        console.error('Đăng nhập thất bại:', error);
+      } else {
+        console.log('Đăng nhập thành công:', data);
+      }
+    });
   };
 
   return (
@@ -33,9 +33,9 @@ function Login() {
             size="30"
             className="input"
             name="email"
+            required
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            required
           />
         </section>
         <section className="group">
@@ -44,15 +44,13 @@ function Login() {
           </label>
           <input
             type="password"
-            minLength="8"
             className="input"
             name="password"
+            required
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            required
           />
         </section>
-        {error && <div className="error">{error}</div>} {/* Hiển thị thông báo lỗi */}
         <button type="button" className="btn" onClick={handleLogin}>
           LOGIN
         </button>

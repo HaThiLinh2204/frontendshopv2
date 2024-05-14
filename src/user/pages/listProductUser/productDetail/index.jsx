@@ -4,6 +4,7 @@ import axios from "axios";
 import "./productDetail.css";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Pagination } from "swiper";
+import { useCartItemCount } from "../../../service/CartItemCountContext";
 
 function ProductDetail() {
   const { id } = useParams();
@@ -11,7 +12,20 @@ function ProductDetail() {
   const [productImages, setProductImages] = useState([]);
   const [productSizes, setProductSizes] = useState([]);
   const [selectedSize, setSelectedSize] = useState(null);
-  const [availableQuantity, setAvailableQuantity] = useState(0);
+  const [selectedQuantity, setSelectedQuantity] = useState(1);
+  const { cartItemCount, setCartItemCount } = useCartItemCount();
+
+  const updateCartItemCount = () => {
+    const userId = parseInt(localStorage.getItem("user_id"));
+    axios
+      .get(`http://localhost:8004/cart/${userId}/items/count`)
+      .then((response) => {
+        setCartItemCount(response.data);
+      })
+      .catch((error) => {
+        console.error("Error fetching cart item count:", error);
+      });
+  };
 
   React.useEffect(() => {
     axios
@@ -33,18 +47,49 @@ function ProductDetail() {
     axios
       .get(`http://localhost:8004/product/size/${id}`)
       .then((response) => {
-        
         setProductSizes(response.data);
-        console.log('products', productSizes);
+        console.log("products", productSizes);
       })
       .catch((error) => {
         console.error("Error fetching products sizes:", error);
       });
-    }, [id, products]);
+  }, [id]);
 
   if (!products) {
     return <div>Loading...</div>;
   }
+
+  const handleAddToCart = () => {
+    if (!selectedSize) {
+      alert("Vui lòng chọn size.");
+    } else {
+      const userId = parseInt(localStorage.getItem("user_id"));
+      console.log(
+        products.product_id,
+        selectedSize,
+        typeof selectedQuantity,
+        typeof userId
+      );
+
+      if (!userId) {
+        alert("Vui lòng đăng nhập để thêm sản phẩm vào giỏ hàng.");
+        return;
+      }
+      axios
+        .post(
+          `http://localhost:8004/cart/${userId}/add?productId=${products.product_id}&sizeId=${selectedSize}&quantity=${selectedQuantity}`
+        )
+        .then((response) => {
+          console.log("Thêm sản phẩm vào giỏ hàng thành công:", response.data);
+          updateCartItemCount();
+        })
+        .catch((error) => {
+          console.error("Lỗi khi thêm sản phẩm vào giỏ hàng:", error);
+        });
+    }
+  };
+
+  const handleSelectSize = () => {};
 
   return (
     <div className="page-detail">
@@ -58,9 +103,8 @@ function ProductDetail() {
             className="mySwiper"
           >
             {productImages.map((image) => (
-              <SwiperSlide>
+              <SwiperSlide key={image.imageId}>
                 <img
-                  key={image.imageId}
                   src={image.imageUrl}
                   alt={`Ảnh sản phẩm ${products.name}`}
                 />
@@ -70,7 +114,7 @@ function ProductDetail() {
         </div>
 
         <div className="product_description">
-          <h2>{products.name}</h2>
+          <h2 className="product_name">{products.name}</h2>
           <span
             style={{
               display: "block",
@@ -86,33 +130,74 @@ function ProductDetail() {
             <h4>Sizes:</h4>
             {productSizes.map((sizeproducts) => (
               <button
-                  key={sizeproducts.sizeId}
-                  //onClick={() => setSelectedSize(sizeproducts.size)}
-                  style={{
-                      width: '200px',
-                      height: '50px',
-                      color: '#EE4D2D',
-                      borderColor: 'red',
-                      marginRight: '20px',
-                      fontSize: '20px'
-                  }}
+                key={sizeproducts.sizeId}
+                onClick={() => setSelectedSize(sizeproducts.sizeId)}
+                style={{
+                  width: "200px",
+                  height: "50px",
+                  color:
+                    selectedSize === sizeproducts.sizeId
+                      ? "#ffffff"
+                      : "#EE4D2D",
+                  backgroundColor:
+                    selectedSize === sizeproducts.sizeId
+                      ? "#EE4D2D"
+                      : "transparent",
+                  marginRight: "20px",
+                  fontSize: "20px",
+                }}
               >
-                  {sizeproducts.sizeName}
+                {sizeproducts.sizeName}
               </button>
-          ))}
+            ))}
           </div>
-          <div style={{marginTop:'150px'}}>
-            <button style={{width:'200px',height:'50px', color:'#EE4D2D', borderColor:'red',marginRight:'20px', fontSize:'20px'}}>Thêm vào giỏ hàng</button>
-            <button  style={{width:'200px',height:'50px', color:'#ffffff', borderColor:'#ffffff',backgroundColor:'#EE4D2D',marginRight:'20px', fontSize:'20px'}}>Mua ngay</button>
+          <div>
+            <h4>Số lượng:</h4>
+            <input
+              type="number"
+              value={selectedQuantity}
+              onChange={(e) => setSelectedQuantity(e.target.value)}
+              style={{ width: "100px" }}
+            />
           </div>
-          
+          <div style={{ marginTop: "20px" }}>
+            <button
+              onClick={handleAddToCart}
+              style={{
+                width: "200px",
+                height: "50px",
+                color: "#EE4D2D",
+                borderColor: "red",
+                marginRight: "20px",
+                fontSize: "20px",
+              }}
+            >
+              Thêm vào giỏ hàng
+            </button>
+            <button
+              style={{
+                width: "200px",
+                height: "50px",
+                color: "#ffffff",
+                borderColor: "#ffffff",
+                backgroundColor: "#EE4D2D",
+                marginRight: "20px",
+                fontSize: "20px",
+              }}
+            >
+              Mua ngay
+            </button>
+          </div>
         </div>
       </div>
       <div style={{ marginTop: "20px" }}>
         <p style={{ fontWeight: "bold" }}>MÔ TẢ : </p>
-        <p style={{ fontSize: "20px", marginTop: "5px" }}>{products.description}</p>
+        <p style={{ fontSize: "20px", marginTop: "5px" }}>
+          {products.description}
+        </p>
       </div>
     </div>
   );
 }
+
 export default ProductDetail;
