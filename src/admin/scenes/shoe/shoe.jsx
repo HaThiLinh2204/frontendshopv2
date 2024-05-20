@@ -24,15 +24,25 @@ const Shoes = () => {
         const response = await axios.get('http://localhost:8004/products/SHOE');
         const productsWithTotalQuantity = await Promise.all(response.data.map(async (product) => {
           const totalResponse = await axios.get(`http://localhost:8004/product/${product.product_id}/total`);
+          const quantitySoldResponse = await axios.get(`http://localhost:8004/product/${product.product_id}/quantitySold`);
+          const remainQuantityResponse = await axios.get(`http://localhost:8004/product/${product.product_id}/remainQuantity`);
+          const interestResponse = await axios.get(`http://localhost:8004/product/${product.product_id}/interest`)
           const totalQuantity = totalResponse.data;
+          const quantitySold = quantitySoldResponse.data;
+          const remainQuantity = remainQuantityResponse.data;
+          const interest = interestResponse.data;
           return {
             ...product,
-            category: 'SHOE',
+            category: 'Giày',
             id: product.product_id,
+            remainQuantity: remainQuantity,
+            quantitySold: quantitySold,
             totalQuantity: totalQuantity,
+            interest: interest
           };
         }));
         setProductList(productsWithTotalQuantity);
+        console.log('aaaaa', productsWithTotalQuantity);
       } catch (error) {
         console.error('Error fetching data:', error);
       }
@@ -70,16 +80,19 @@ const Shoes = () => {
   };
 
   const columns = [
-    { field: "product_id", headerName: "ID", flex: 0.5 },
-    { field: "name",headerName: "Name",flex: 1,},
-    { field: "category",headerName: " Category", flex: 1, headerAlign: "left", align: "left",},
-    { field: "description", headerName: "Description", flex: 2 }, 
-    { field: "price", headerName: "Price", flex: 1 },
-    { field: "saleprice", headerName: "Saleprice", flex: 1 },
-    { field: "totalQuantity", headerName: "Total", flex: 1},
+    // { field: "product_id", headerName: "ID", flex: 0.5 },
+    { field: "name",headerName: "Tên",flex: 3,},
+    // { field: "category",headerName: " Loại", flex: 1, headerAlign: "left", align: "left",},
+    { field: "description", headerName: "Mô tả", flex: 2 }, 
+    { field: "price", headerName: "Giá gốc", flex: 1 },
+    { field: "saleprice", headerName: "Giá bán", flex: 1 },
+    { field: "quantitySold", headerName:"Đã Bán", flex: 1 },
+    { field: "remainQuantity", headerName:"Còn lại", flex: 1 },
+    { field: "totalQuantity", headerName: "Tổng", flex: 1},
+    { field: "interest", headerName: "Tiền lãi", flex: 1},
     {
       field: "actions",
-      headerName: "Actions",
+      headerName: "Thao tác",
       flex: 1,
       sortable: false,
       renderCell: (params) => (
@@ -98,8 +111,8 @@ const Shoes = () => {
   return (
     <Box m="20px">
       <Header
-        title="SHOE"
-        subtitle="Manage SHOE list"
+        title="GIÀY"
+        subtitle="Quản lý danh sách giày"
       />
       <Box
         m="40px 0 0 0"

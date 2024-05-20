@@ -1,21 +1,22 @@
 .cart-page {
-    padding: 200px 30px 10px 30px;
+    padding: 120px 30px 10px 30px;
     .cart-container {
         .cart-header {
             display: grid;
             gap: 10px;
             padding: 10px;
-            grid-template-columns: 50px auto auto auto auto auto auto;
-            .item1 {
+            grid-template-columns: 50px auto auto auto auto auto auto auto;
+            /* .item1 {
                 grid-column-start: 2;
                 grid-column-end: 4;
-            }
+            } */
         }
         .cart-items {
             .cart-item {
                 display: grid;
                 gap: 10px;
                 padding: 10px;
+                align-items: center;
                 grid-template-columns: 50px auto auto auto auto auto auto auto;
                 /* .item1 {
                     grid-column-start: 2;
@@ -23,6 +24,10 @@
                 } */
                 img {
                     width: 90px;
+                }
+                input {
+                    width: 25px;
+                    height: 25px;
                 }
             }
         }
