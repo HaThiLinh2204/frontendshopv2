@@ -6,6 +6,7 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import { Pagination } from "swiper";
 import { useCartItemCount } from "../../../service/CartItemCountContext";
 import { useNavigate } from 'react-router-dom';
+import AddShoppingCartIcon from '@mui/icons-material/AddShoppingCart';
 
 function ProductDetail() {
   const { id } = useParams();
@@ -101,7 +102,9 @@ function ProductDetail() {
   
   const handleAddToCartAndBuy = () => {
     handleAddToCart();
-    navigate(`/user/cart`);
+    if (selectedSize) {
+      navigate(`/user/cart`);
+    }
   }
 
   const handleAddToCart = () => {
@@ -164,71 +167,54 @@ function ProductDetail() {
               display: "block",
               color: "#D0011B",
               fontSize: "25px",
-              marginTop: "20px",
-              marginLeft: "20px",
+              marginTop: "30px",
+              marginLeft: "45px",
             }}
           >
             {products.price} đ
           </span>
-          <div>
-            <h4>Sizes:</h4>
+          <div className = "sizesSelect">
+            <h4>Chọn size:</h4>
             {productSizes.map((sizeproducts) => (
               <button
+                className = "button-size"
                 key={sizeproducts.sizeId}
                 onClick={() => setSelectedSize(sizeproducts.sizeId)}
                 style={{
-                  width: "200px",
-                  height: "50px",
                   color:
                     selectedSize === sizeproducts.sizeId
                       ? "#ffffff"
-                      : "#EE4D2D",
+                      : "#000",
                   backgroundColor:
                     selectedSize === sizeproducts.sizeId
                       ? "#EE4D2D"
                       : "transparent",
-                  marginRight: "20px",
-                  fontSize: "20px",
                 }}
               >
                 {sizeproducts.sizeName}
               </button>
             ))}
           </div>
-          <div>
+          <div className = "quanlitySelect">
             <h4>Số lượng:</h4>
             <input
+              className = "button-quantity"
               type="number"
               value={selectedQuantity}
               onChange={(e) => setSelectedQuantity(e.target.value)}
-              style={{ width: "100px" }}
             />
           </div>
           <div style={{ marginTop: "20px" }}>
             <button
-              onClick={handleAddToCart}
-              style={{
-                width: "200px",
-                height: "50px",
-                color: "#EE4D2D",
-                borderColor: "red",
-                marginRight: "20px",
-                fontSize: "20px",
-              }}
+              className = "addToCartButton"
             >
+              {/* <AddShoppingCartIcon/> */}
+              {/* <svg data-testid="AddShoppingCartIcon"></svg> */}
               Thêm vào giỏ hàng
             </button>
             <button
-            onClick = {handleAddToCartAndBuy}
-              style={{
-                width: "200px",
-                height: "50px",
-                color: "#ffffff",
-                borderColor: "#ffffff",
-                backgroundColor: "#EE4D2D",
-                marginRight: "20px",
-                fontSize: "20px",
-              }}
+              className = "buyButton"
+              onClick = {handleAddToCartAndBuy}
             >
               Mua ngay
             </button>

@@ -211,6 +211,7 @@ const Form = ({ mode }) => {
             sizeName: size.sizeName,
             quantity: size.quantity,
             sizeId: size.sizeId,
+            remainQuantity: size.quantity
           });
         }
         for (const image of values.imageUrls) {

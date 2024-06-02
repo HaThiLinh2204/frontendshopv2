@@ -99,17 +99,6 @@ function ShoeList() {
                   onChange={handleSearchChange}
                   placeholder="Tìm kiếm giày.." />
               </Box>
-
-              {/* <button type="submit" class="button-search">
-                search
-              </button>
-              <input
-                type="text"
-                placeholder="Tìm kiếm giày..."
-                value={searchKeyword}
-                onChange={handleSearchChange}
-                className="search-box"
-              /> */}
             </div>
             <div className="navbar-filter-item2">
               <label style={{ fontSize: "20px", fontWeight: "bold" }}>

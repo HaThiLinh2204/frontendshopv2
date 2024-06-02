@@ -87,7 +87,7 @@ const Sidebar = () => {
                 ml="15px"
               >
                 <Typography variant="h3" color={colors.grey[100]}>
-                  ADMIN PAGE
+                  QUẢN LÝ
                 </Typography>
                 <IconButton onClick={() => setIsCollapsed(!isCollapsed)}>
                   <MenuOutlinedIcon />
@@ -100,7 +100,7 @@ const Sidebar = () => {
             <Box mb="25px">
               <Box textAlign="center">
                 <Typography variant="h4" color={colors.greenAccent[500]}>
-                  Manage the FURLA shop
+                  Quản lý cửa hàng
                 </Typography>
               </Box>
             </Box>
@@ -108,7 +108,7 @@ const Sidebar = () => {
 
           <Box paddingLeft={isCollapsed ? undefined : "10%"}>
             <Item
-              title="HOME"
+              title="Trang chủ"
               to="/admin"
               icon={<HomeOutlinedIcon />}
               selected={selected}
@@ -120,31 +120,31 @@ const Sidebar = () => {
               color={colors.grey[300]}
               sx={{ m: "15px 0 5px 20px" }}
             >
-              LIST DATA
+              Danh sách sản phẩm
             </Typography>
             <Item
-              title="Shoe"
+              title="Giày dép"
               to="/admin/shoes"
               icon={<HiveOutlinedIcon />}
               selected={selected}
               setSelected={setSelected}
             />
             <Item
-              title="Clothes"
+              title="Quần áo"
               to="/admin/clothes"
               icon={<LightModeOutlinedIcon />}
               selected={selected}
               setSelected={setSelected}
             />
             <Item
-              title="Handbag"
+              title="Túi xách"
               to="/admin/handbags"
               icon={<ShoppingBagOutlinedIcon />}
               selected={selected}
               setSelected={setSelected}
             />
             <Item
-              title="Accessory"
+              title="Phụ kiện"
               to="/admin/accessory"
               icon={<GamepadOutlinedIcon />}
               selected={selected}
@@ -156,17 +156,17 @@ const Sidebar = () => {
               color={colors.grey[300]}
               sx={{ m: "15px 0 5px 20px" }}
             >
-              Pages
+              Trang
             </Typography>
             <Item
-              title="Product form"
+              title="Thêm sản phẩm"
               to="/admin/form"
               icon={<PersonOutlinedIcon />}
               selected={selected}
               setSelected={setSelected}
             />
             <Item
-              title="FAQ Page"
+              title="Hỏi đáp"
               to="/admin/faq"
               icon={<HelpOutlineOutlinedIcon />}
               selected={selected}

@@ -1,7 +1,7 @@
 .shoe-list {
   padding: 200px 30px 10px 30px;
-  font-family: "Raleway", sans-serif;
-  font-weight: 350;
+  /* font-family: "Raleway", sans-serif; */
+  /* font-weight: 350; */
 }
 .shoe-list .title-page h2 {
   font-size: 20px;
@@ -152,18 +152,18 @@
 }
 
 .shoe-list .container-item .item-information .item-name {
-  font-size: 18px;
+  font-size: 19px;
   margin: 15px auto;
   overflow: hidden;
   width: 100%;
-  font-weight: 550;
+  /* font-weight: 550; */
 }
 .shoe-list .container-item .item-price {
   margin-top: 10px;
   font-size: 20px;
   color: brown;
   text-align: center;
-  font-weight: bold;
+  /* font-weight: bold; */
 }
 
 .shoe-list .container-item .buy-item-button {
