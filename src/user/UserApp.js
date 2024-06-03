@@ -10,6 +10,7 @@ import Cart from './pages/listCart/Cart';
 import { CartItemCountProvider } from './service/CartItemCountContext';
 import axios from "axios";
 import ListOrder from './pages/listOrder';
+import AccessoryList from './pages/listProductUser/accessoryList';
 
 function UserApp({isLogin, role}) {
   
@@ -21,6 +22,7 @@ function UserApp({isLogin, role}) {
           <Route path="/homepage" element={<HomePage />} />
           <Route path="/shoes" element={<ShoeList />} />
           <Route path="/products/:id" element={<ProductDetail />} />
+          <Route path="/accessory" element={<AccessoryList/>}/>
           <Route path="/order" element={<ListOrder/>}/>
           <Route path="/clothes" element={<ClothesList />}/>
           <Route path="/cart" element={<Cart />} />

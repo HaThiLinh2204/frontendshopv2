@@ -196,13 +196,16 @@ const Form = ({ mode }) => {
       }
       else {
         const productId = uuidv4();
+        const currentDate = new Date();
+        const formattedDate = currentDate.toISOString();
         productData = {
           product_id: productId,
           name: values.product_name,
           category: values.category,
           description: values.description,
           price: values.price,
-          saleprice: values.saleprice
+          saleprice: values.saleprice,
+          createdDate: formattedDate
         };
         const productResponse = await Axios.post('http://localhost:8004/products', productData);
         for (const size of values.sizes) {
@@ -251,17 +254,17 @@ const Form = ({ mode }) => {
   
 
   const options = [
-    { label: "SHOE", value: "SHOE" },
-    { label: "CLOTHES", value: "CLOTHES" },
-    { label: "HANDBAG", value: "HANDBAG" },
-    { label: "ACCESSORY", value: "ACCESSORY" },
+    { label: "Giày dép", value: "SHOE" },
+    { label: "Quần áo", value: "CLOTHES" },
+    { label: "Túi xách", value: "HANDBAG" },
+    { label: "Phụ kiện", value: "ACCESSORY" },
   ];
 
   return (
     <Box m="20px">
       <Header
-        title={mode === 'edit' ? "EDIT PRODUCT" : "ADD NEW PRODUCT"}
-        subtitle={mode === 'edit' ? "Edit existing product details" : "Create a new product with size and image"}
+        title={mode === 'edit' ? "CHỈNH SỬA SẢN PHẨM" : "THÊM SẢN PHẨM MỚI"}
+        subtitle={mode === 'edit' ? "Chỉnh sửa thông tin chi tiết của sản phẩm" : "Tạo sản phẩm mới"}
       />
       <Formik
         onSubmit = { handleFormSubmit }
@@ -292,7 +295,7 @@ const Form = ({ mode }) => {
                 fullWidth
                 variant="filled"
                 type="text"
-                label = "Product name"
+                label = "Tên sản phẩm"
                 onBlur = {handleBlur}
                 onChange = {handleChange}
                 value = {values.product_name}
@@ -304,7 +307,7 @@ const Form = ({ mode }) => {
                 fullWidth
                 sx={{ gridColumn: "span 2" }}
               >
-                <InputLabel id="category-label">Category</InputLabel>
+                <InputLabel id="category-label">Danh mục</InputLabel>
                 <Select
                   id="category"
                   name="category"
@@ -325,7 +328,7 @@ const Form = ({ mode }) => {
                 fullWidth
                 variant="filled"
                 type="number"
-                label="Price"
+                label="Giá gốc"
                 onBlur={handleBlur}
                 onChange={handleChange}
                 value={values.price}
@@ -336,7 +339,7 @@ const Form = ({ mode }) => {
                 fullWidth
                 variant="filled"
                 type="number"
-                label="Sale Price"
+                label="Giá bán"
                 onBlur={handleBlur}
                 onChange={handleChange}
                 value={values.saleprice}
@@ -347,12 +350,12 @@ const Form = ({ mode }) => {
                 fullWidth
                 variant="filled"
                 type="text"
-                label="Description"
+                label="Mô tả"
                 onBlur={handleBlur}
                 onChange={handleChange}
                 value={values.description}
                 name="description"
-                sx={{ gridColumn: "span 2", marginBottom:'20px' }}
+                sx={{ gridColumn: "span 2", marginBottom:'20px',  gridRow: "span 2" }}
               />
             </Box>
             
@@ -382,13 +385,13 @@ const Form = ({ mode }) => {
                   variant="filled"
                   sx={{ gridColumn: "span 1", fontSize: "15px" }}
                 >
-                  Name: {size.sizeName}
+                  Tên size {size.sizeName}
                 </Typography>
                 <Typography
                   variant="filled"
                   sx={{ gridColumn: "span 1", fontSize: "15px" }}
                 >
-                  Quantity: {size.quantity}
+                  Số lượng: {size.quantity}
                 </Typography>
                 <Button
                   type="button"
@@ -462,7 +465,7 @@ const Form = ({ mode }) => {
                 fullWidth
                 variant="filled"
                 type="text"
-                label="Image URL"
+                label="Link ảnh"
                 onBlur={handleBlur}
                 onChange={(e) => setCurrentImageUrl({ ...currentImageUrl, imageUrl: e.target.value })}
                 value={currentImageUrl.imageUrl}
@@ -476,7 +479,7 @@ const Form = ({ mode }) => {
                 onClick={() => handleAddImageUrl(values, setValues)}
                 sx={{ gridColumn: "span 1", ml: 2, mt: 2 }}
               >
-                Add Image URL
+                Thêm ảnh
               </Button>
             </Box>
 
@@ -487,7 +490,7 @@ const Form = ({ mode }) => {
               onClick={handleOpenModal}
               sx={{ gridColumn: "span 1", ml: 2, mt: 2 }}
             >
-              Add Size
+              Thêm size mới
             </Button>
             <Modal
               open={openModal}
@@ -510,7 +513,7 @@ const Form = ({ mode }) => {
                   fullWidth
                   variant="filled"
                   type="text"
-                  label="Size name"
+                  label="Tên size"
                   onBlur={handleBlur}
                   onChange={(e) =>
                     setCurrentSize({ ...currentSize, sizeName: e.target.value })
@@ -523,7 +526,7 @@ const Form = ({ mode }) => {
                   fullWidth
                   variant="filled"
                   type="number"
-                  label="Quantity"
+                  label="Số lượng"
                   onBlur={handleBlur}
                   onChange={(e) =>
                     setCurrentSize({ ...currentSize, quantity: e.target.value })
@@ -542,7 +545,7 @@ const Form = ({ mode }) => {
                     handleCloseModal()
                     )}
                 >
-                  Add Size
+                  Thêm size
                 </Button>
               </Box>
             </Modal>
@@ -552,7 +555,7 @@ const Form = ({ mode }) => {
                 color="secondary"
                 variant="contained"
               >
-                {mode === 'edit' ? "Save Changes" : "Create New Product"}
+                {mode === 'edit' ? "Lưu thay đổi" : "Tạo mới"}
               </Button>
             </Box>
           </form>
