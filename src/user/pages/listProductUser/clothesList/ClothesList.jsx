@@ -2,6 +2,10 @@ import React, { useState, useEffect } from "react";
 import "./ClothesList.css";
 import axios from "axios";
 import { Link } from "react-router-dom";
+import { Box, IconButton } from "@mui/material";
+import InputBase from "@mui/material/InputBase";
+import SearchIcon from "@mui/icons-material/Search";
+
 
 import { removeDiacritics } from "D:/gr2/frontend2/frontendshopv2/src/user/service/utils/utils.js";
 function ClothesList() {
@@ -9,6 +13,9 @@ function ClothesList() {
   const [searchKeyword, setSearchKeyword] = useState("");
   const [minPrice, setMinPrice] = useState("");
   const [maxPrice, setMaxPrice] = useState("");
+  const formatCurrency = (value) => {
+    return value.toLocaleString('vi-VN', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+  };
   useEffect(() => {
     const fetchProducts = async () => {
       try {
@@ -112,20 +119,25 @@ function ClothesList() {
             {filteredproducts.length} kết quả được tìm thấy
           </div>
           <div className="container-page">
-            {filteredproducts.map((product) => (
-              <div className="container-item" key={product.product_id}>
-                <Link to={`/user/products/${product.product_id}`}>
+            {filteredproducts.map((accessory) => (
+              <div className="container-item" key={accessory.product_id}>
+                <Link to={`/user/products/${accessory.product_id}`}>
+                  <div className="item-img">
                     <img
-                      src={product.imageUrl}
-                      alt={`Ảnh của giày ${product.name}`}
+                      src={accessory.imageUrl}
+                      alt={`Ảnh của giày ${accessory.name}`}
                     />
-                  <div className="item-name">{product.name}</div>
-                  <div className="item-price">{product.price}đ</div>
-                  <button>Thêm vào giỏ hàng</button>
+                  </div>
+                  <div className="item-information">
+                    <div className="item-name">{accessory.name}</div>
+                    <div className="item-price">{formatCurrency(accessory.price)}đ</div>
+                    {/* <button class="buy-item-button">
+                      <span class="item-button">Mua hàng</span>
+                    </button> */}
+                  </div>
                 </Link>
               </div>
             ))}
-            
           </div>
         </div>
       </div>

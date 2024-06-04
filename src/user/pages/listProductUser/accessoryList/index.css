@@ -1,14 +1,16 @@
 .accessory-list {
- padding: 200px 30px 10px 30px;
-.title-page h2 {
- font-size: 20px;
- font-weight: 600 !important;
-}
+  padding: 200px 30px 10px 30px;
 
-a {
+  .title-page h2 {
+    font-size: 20px;
+    font-weight: 600 !important;
+  }
+
+  a {
     text-decoration: none;
     color: #000000;
   }
+
   .container-page {
     margin-left: 20px;
     margin-top: 20px;
@@ -16,23 +18,27 @@ a {
     grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
     gap: 2rem;
     width: 100%;
-    
+
   }
-  .container-item { 
+
+  .container-item {
     width: 200px;
     margin: 20px 10px;
-    background:#fff;
-    padding:15px;
-    border-radius:6px;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
-    position:relative;
+    background: #fff;
+    padding: 15px;
+    border-radius: 6px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
+    position: relative;
   }
+
   .container-item:hover .item-img {
     top: -20px;
   }
+
   .container-item:hover .item-img img {
     box-shadow: 0 19px 38px rgba(0, 0, 0, 0.3), 0 15px 12px rgba(0, 0, 0, 0.22);
   }
+
   .container-item .item-img {
     position: absolute;
     top: 5px;
@@ -47,16 +53,19 @@ a {
     padding: 15px;
     transition: all 0.2s ease-in-out;
   }
+
   .container-item .item-img img {
     width: 100%;
     transition: all 0.2s ease-in-out;
     border-radius: 6px;
   }
+
   .item-information {
     padding-top: 150%;
     text-align: center;
     display: grid;
   }
+
   .container-item .item-information .item-name {
     font-size: 19px;
     margin: 15px auto;
@@ -64,6 +73,7 @@ a {
     width: 100%;
     /* font-weight: 550; */
   }
+
   .container-item .item-price {
     margin-top: 10px;
     font-size: 20px;
@@ -71,6 +81,7 @@ a {
     text-align: center;
     /* font-weight: bold; */
   }
+
   .container-item .buy-item-button {
     outline: none;
     border-radius: 50px;
@@ -85,50 +96,62 @@ a {
     background-color: #ffffff;
     border: 1px solid rgba(0, 0, 0, 0.6);
   }
+
   .container-item .buy-item-button .item-button {
     color: #000000;
     font-size: 12px;
     font-weight: 500;
     letter-spacing: 0.7px;
   }
+
   .container-item .buy-item-button:hover {
     animation: bn54rotate 0.7s ease-in-out both;
   }
+
   .container-item .buy-item-button:hover .item-button {
     animation: bn54storm 0.7s ease-in-out both;
     animation-delay: 0.06s;
   }
+
   @keyframes bn54rotate {
     0% {
       transform: rotate(0deg) translate3d(0, 0, 0);
     }
+
     25% {
       transform: rotate(3deg) translate3d(0, 0, 0);
     }
+
     50% {
       transform: rotate(-3deg) translate3d(0, 0, 0);
     }
+
     75% {
       transform: rotate(1deg) translate3d(0, 0, 0);
     }
+
     100% {
       transform: rotate(0deg) translate3d(0, 0, 0);
     }
   }
-  
+
   @keyframes bn54storm {
     0% {
       transform: translate3d(0, 0, 0) translateZ(0);
     }
+
     25% {
       transform: translate3d(4px, 0, 0) translateZ(0);
     }
+
     50% {
       transform: translate3d(-3px, 0, 0) translateZ(0);
     }
+
     75% {
       transform: translate3d(2px, 0, 0) translateZ(0);
     }
+
     100% {
       transform: translate3d(0, 0, 0) translateZ(0);
     }

@@ -8,27 +8,26 @@ import SearchIcon from "@mui/icons-material/Search";
 
 import { removeDiacritics } from "D:/gr2/frontend2/frontendshopv2/src/user/service/utils/utils.js";
 
-function AccessoryList() {
-
+function HandBagList() {
     const [products, setProducts] = useState([]);
     const [searchKeyword, setSearchKeyword] = useState("");
     const [minPrice, setMinPrice] = useState("");
     const [maxPrice, setMaxPrice] = useState("");
     const formatCurrency = (value) => {
-      return value.toLocaleString('vi-VN', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
-    };
+        return value.toLocaleString('vi-VN', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+      };
     useEffect(() => {
         console.log('kkkkkk');
       const fetchProducts = async () => {
         try {
-          const response = await axios.get("http://localhost:8004/products/accessory");
+          const response = await axios.get("http://localhost:8004/products/handbag");
           const processedProducts = await Promise.all(
-            response.data.map(async (accessory) => {
+            response.data.map(async (handbag) => {
               const imageResponse = await axios.get(
-                `http://localhost:8004/product/image/${accessory.product_id}?limit=1`
+                `http://localhost:8004/product/image/${handbag.product_id}?limit=1`
               );
               const imageUrl = imageResponse.data[0]?.imageUrl || "";
-              return { ...accessory, imageUrl };
+              return { ...handbag, imageUrl };
             })
           );
           console.log('wwwww', processedProducts);
@@ -52,39 +51,39 @@ function AccessoryList() {
     const handleMaxPriceChange = (event) => {
       setMaxPrice(event.target.value);
     };
-    const filteredproducts = products.filter((accessory) => {
+    const filteredproducts = products.filter((handbag) => {
         console.log('products', products);
-      const accessoryPrice = parseInt(accessory.price);
+      const handbagPrice = parseInt(handbag.price);
       if (minPrice && maxPrice) {
         return (
-            accessoryPrice >= parseInt(minPrice) &&
-            accessoryPrice <= parseInt(maxPrice) &&
-          removeDiacritics(accessory.name.toLowerCase()).includes(
+            handbagPrice >= parseInt(minPrice) &&
+            handbagPrice <= parseInt(maxPrice) &&
+          removeDiacritics(handbag.name.toLowerCase()).includes(
             removeDiacritics(searchKeyword.toLowerCase())
           )
         );
       } else if (minPrice) {
         return (
-            accessoryPrice >= parseInt(minPrice) &&
-          removeDiacritics(accessory.name.toLowerCase()).includes(
+            handbagPrice >= parseInt(minPrice) &&
+          removeDiacritics(handbag.name.toLowerCase()).includes(
             removeDiacritics(searchKeyword.toLowerCase())
           )
         );
       } else if (maxPrice) {
         return (
-            accessoryPrice <= parseInt(maxPrice) &&
-          removeDiacritics(accessory.name.toLowerCase()).includes(
+            handbagPrice <= parseInt(maxPrice) &&
+          removeDiacritics(handbag.name.toLowerCase()).includes(
             removeDiacritics(searchKeyword.toLowerCase())
           )
         );
       }
-      return removeDiacritics(accessory.name.toLowerCase()).includes(
+      return removeDiacritics(handbag.name.toLowerCase()).includes(
         removeDiacritics(searchKeyword.toLowerCase())
       );
     });
 
     return (
-        <div className = "accessory-list">
+        <div className = "handBag-list">
              <div className="navbar-filter">
             <div className="navbar-filter-item1">
               {/* <button type="submit" className="button-search">
@@ -132,18 +131,18 @@ function AccessoryList() {
           </div>
 
           <div className="container-page">
-            {filteredproducts.map((accessory) => (
-              <div className="container-item" key={accessory.product_id}>
-                <Link to={`/user/products/${accessory.product_id}`}>
+            {filteredproducts.map((handbag) => (
+              <div className="container-item" key={handbag.product_id}>
+                <Link to={`/user/products/${handbag.product_id}`}>
                   <div className="item-img">
                     <img
-                      src={accessory.imageUrl}
-                      alt={`Ảnh của giày ${accessory.name}`}
+                      src={handbag.imageUrl}
+                      alt={`Ảnh của giày ${handbag.name}`}
                     />
                   </div>
                   <div className="item-information">
-                    <div className="item-name">{accessory.name}</div>
-                    <div className="item-price">{formatCurrency(accessory.price)}đ</div>
+                    <div className="item-name">{handbag.name}</div>
+                    <div className="item-price">{formatCurrency(handbag.price)}đ</div>
                     {/* <button class="buy-item-button">
                       <span class="item-button">Mua hàng</span>
                     </button> */}
@@ -155,4 +154,4 @@ function AccessoryList() {
         </div>
     )
 }
-export default AccessoryList;
+export default HandBagList;

@@ -12,6 +12,9 @@ function ShoeList() {
   const [searchKeyword, setSearchKeyword] = useState("");
   const [minPrice, setMinPrice] = useState("");
   const [maxPrice, setMaxPrice] = useState("");
+  const formatCurrency = (value) => {
+    return value.toLocaleString('vi-VN', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+  };
   useEffect(() => {
     const fetchProducts = async () => {
       try {
@@ -135,7 +138,7 @@ function ShoeList() {
                   </div>
                   <div className="item-information">
                     <div className="item-name">{shoe.name}</div>
-                    <div className="item-price">{shoe.price}đ</div>
+                    <div className="item-price">{formatCurrency(shoe.price)}đ</div>
                     {/* <button class="buy-item-button">
                       <span class="item-button">Mua hàng</span>
                     </button> */}
