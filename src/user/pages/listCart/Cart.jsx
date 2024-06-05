@@ -140,37 +140,37 @@ function Cart() {
     const orderItems = cartItems.filter((item) => item.selected);
     console.log('userId', userId, orderItems);
   
-    // Chuẩn hóa các đối tượng orderItem
-    const normalizedOrderItems = orderItems.map(item => ({
-      id: item.id,
-      productId: item.productId,
-      sizeId: item.sizeId,
-      quantity: item.quantity,
-      price: item.price,
-      subTotal: item.subTotal,
-      productName: item.productName,
-      sizeName: item.sizeName
-    }));
+    // // Chuẩn hóa các đối tượng orderItem
+    // const normalizedOrderItems = orderItems.map(item => ({
+    //   id: item.id,
+    //   productId: item.productId,
+    //   sizeId: item.sizeId,
+    //   quantity: item.quantity,
+    //   price: item.price,
+    //   subTotal: item.subTotal,
+    //   productName: item.productName,
+    //   sizeName: item.sizeName
+    // }));
   
-    const orderPromises = normalizedOrderItems.map(orderItem => {
-      // Truyền userId qua query parameter trong URL
-      return axios.post(`http://localhost:8004/order/${userId}/create?userId=${userId}`, orderItem, {
-        headers: {
-          'Content-Type': 'application/json' // Đặt header Content-Type là application/json
-        }
-      });
-    });
+    // const orderPromises = normalizedOrderItems.map(orderItem => {
+    //   // Truyền userId qua query parameter trong URL
+    //   return axios.post(`http://localhost:8004/order/${userId}/create?userId=${userId}`, orderItem, {
+    //     headers: {
+    //       'Content-Type': 'application/json' // Đặt header Content-Type là application/json
+    //     }
+    //   });
+    // });
   
-    Promise.all(orderPromises)
-      .then(responses => {
-        console.log('Đặt hàng thành công:', responses);
-        setCartItems(cartItems.filter(item => !item.selected));
-        updateCartItemCount();
-        navigate(`/user/order`);
-      })
-      .catch(error => {
-        console.error('Lỗi đặt hàng:', error);
-      });
+    // Promise.all(orderPromises)
+    //   .then(responses => {
+    //     console.log('Đặt hàng thành công:', responses);
+    //     setCartItems(cartItems.filter(item => !item.selected));
+    //     updateCartItemCount();
+    //     navigate(`/user/order`);
+    //   })
+    //   .catch(error => {
+    //     console.error('Lỗi đặt hàng:', error);
+    //   });
   };
 
   return (

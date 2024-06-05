@@ -61,45 +61,6 @@ function ProductDetail() {
     return <div>Loading...</div>;
   }
 
-  // const handleAddToCartAndBuy = () => {
-  //   handleAddToCart(() => {
-  //     navigate(`/user/cart`);
-  //   });
-  // }
-  
-  // const handleAddToCart = (callback) => {
-  //   if (!selectedSize) {
-  //     alert("Vui lòng chọn size.");
-  //   } else {
-  //     const userId = parseInt(localStorage.getItem("user_id"));
-  //     console.log(
-  //       products.product_id,
-  //       selectedSize,
-  //       typeof selectedQuantity,
-  //       typeof userId
-  //     );
-  
-  //     if (!userId) {
-  //       alert("Vui lòng đăng nhập để thêm sản phẩm vào giỏ hàng.");
-  //       return;
-  //     }
-  //     axios
-  //       .post(
-  //         `http://localhost:8004/cart/${userId}/add?productId=${products.product_id}&sizeId=${selectedSize}&quantity=${selectedQuantity}`
-  //       )
-  //       .then((response) => {
-  //         console.log("Thêm sản phẩm vào giỏ hàng thành công:", response.data);
-  //         // Lưu trữ thông tin sản phẩm vừa thêm vào localStorage
-  //         localStorage.setItem("lastAddedCartItem", response.data.id);
-  //         updateCartItemCount();
-  //         if (callback) callback();
-  //       })
-  //       .catch((error) => {
-  //         console.error("Lỗi khi thêm sản phẩm vào giỏ hàng:", error);
-  //       });
-  //   }
-  // };
-  
   const handleAddToCartAndBuy = () => {
     handleAddToCart();
     if (selectedSize) {

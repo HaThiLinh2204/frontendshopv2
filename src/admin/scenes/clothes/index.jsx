@@ -70,16 +70,16 @@ const Clothes = () => {
   };
 
   const columns = [
-    { field: "product_id", headerName: "ID", flex: 0.5 },
-    { field: "name",headerName: "Name",flex: 1,},
-    { field: "category",headerName: " Category", flex: 1, headerAlign: "left", align: "left",},
-    { field: "description", headerName: "Description", flex: 2 }, 
-    { field: "price", headerName: "Price", flex: 1 },
-    { field: "saleprice", headerName: "Saleprice", flex: 1 },
-    { field: "totalQuantity", headerName: "Total", flex: 1},
+    { field: "name",headerName: "Tên",flex: 3,},
+    { field: "description", headerName: "Mô tả", flex: 2 }, 
+    { field: "price", headerName: "Giá gốc", flex: 1 },
+    { field: "saleprice", headerName: "Giá bán", flex: 1 },
+    { field: "quantitySold", headerName:"Đã Bán", flex: 1 },
+    { field: "remainQuantity", headerName:"Còn lại", flex: 1 },
+    { field: "totalQuantity", headerName: "Tổng", flex: 1},
     {
       field: "actions",
-      headerName: "Actions",
+      headerName: "Thao tác",
       flex: 1,
       sortable: false,
       renderCell: (params) => (
@@ -94,6 +94,7 @@ const Clothes = () => {
       ),
     },
   ];
+
 
   return (
     <Box m="20px">
