@@ -24,12 +24,21 @@ const Accessory = () => {
         const response = await axios.get('http://localhost:8004/products/ACCESSORY');
         const productsWithTotalQuantity = await Promise.all(response.data.map(async (product) => {
           const totalResponse = await axios.get(`http://localhost:8004/product/${product.product_id}/total`);
+          const quantitySoldResponse = await axios.get(`http://localhost:8004/product/${product.product_id}/quantitySold`);
+          const remainQuantityResponse = await axios.get(`http://localhost:8004/product/${product.product_id}/remainQuantity`);
+          const interestResponse = await axios.get(`http://localhost:8004/product/${product.product_id}/interest`)
           const totalQuantity = totalResponse.data;
+          const quantitySold = quantitySoldResponse.data;
+          const remainQuantity = remainQuantityResponse.data;
+          const interest = interestResponse.data;
           return {
             ...product,
-            category: ' ACCESSORY',
+            category: 'Phụ kiện',
             id: product.product_id,
+            remainQuantity: remainQuantity,
+            quantitySold: quantitySold,
             totalQuantity: totalQuantity,
+            interest: interest
           };
         }));
         setProductList(productsWithTotalQuantity);
@@ -99,8 +108,8 @@ const Accessory = () => {
   return (
     <Box m="20px">
       <Header
-        title="ACCESSORY"
-        subtitle="Manage productList list"
+        title="PHỤ KIỆN"
+        subtitle="Quản lý danh sách phụ kiện"
       />
       <Box
         m="40px 0 0 0"
