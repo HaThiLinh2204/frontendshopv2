@@ -69,6 +69,7 @@ function ProductDetail() {
   }
 
   const handleAddToCart = () => {
+    console.log('selected', selectedSize);
     if (!selectedSize) {
       alert("Vui lòng chọn size.");
     } else {
@@ -168,6 +169,7 @@ function ProductDetail() {
           <div style={{ marginTop: "20px" }}>
             <button
               className = "addToCartButton"
+              onClick = {handleAddToCart}
             >
               {/* <AddShoppingCartIcon/> */}
               {/* <svg data-testid="AddShoppingCartIcon"></svg> */}

@@ -143,9 +143,6 @@ function HandBagList() {
                   <div className="item-information">
                     <div className="item-name">{handbag.name}</div>
                     <div className="item-price">{formatCurrency(handbag.price)}đ</div>
-                    {/* <button class="buy-item-button">
-                      <span class="item-button">Mua hàng</span>
-                    </button> */}
                   </div>
                 </Link>
               </div>

@@ -22,17 +22,26 @@ const Clothes = () => {
     const fetchProductsWithTotalQuantity = async () => {
       try {
         const response = await axios.get('http://localhost:8004/products/CLOTHES');
-        const clothesWithTotalQuantity = await Promise.all(response.data.map(async (clothe) => {
-          const totalResponse = await axios.get(`http://localhost:8004/product/${clothe.product_id}/total`);
+        const productsWithTotalQuantity = await Promise.all(response.data.map(async (product) => {
+          const totalResponse = await axios.get(`http://localhost:8004/product/${product.product_id}/total`);
+          const quantitySoldResponse = await axios.get(`http://localhost:8004/product/${product.product_id}/quantitySold`);
+          const remainQuantityResponse = await axios.get(`http://localhost:8004/product/${product.product_id}/remainQuantity`);
+          const interestResponse = await axios.get(`http://localhost:8004/product/${product.product_id}/interest`)
           const totalQuantity = totalResponse.data;
+          const quantitySold = quantitySoldResponse.data;
+          const remainQuantity = remainQuantityResponse.data;
+          const interest = interestResponse.data;
           return {
-            ...clothe,
-            category: 'CLOTHES',
-            id: clothe.product_id,
+            ...product,
+            category: 'Quần áo',
+            id: product.product_id,
+            remainQuantity: remainQuantity,
+            quantitySold: quantitySold,
             totalQuantity: totalQuantity,
+            interest: interest
           };
         }));
-        setClothes(clothesWithTotalQuantity);
+        setClothes(productsWithTotalQuantity);
       } catch (error) {
         console.error('Error fetching data:', error);
       }
@@ -99,8 +108,8 @@ const Clothes = () => {
   return (
     <Box m="20px">
       <Header
-        title="CLOTHES"
-        subtitle="Manage clothes list"
+        title="Quần áo"
+        subtitle="Quản lý danh sách quần áo"
       />
       <Box
         m="40px 0 0 0"
