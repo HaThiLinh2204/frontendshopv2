@@ -1,0 +1,34 @@
+.review-page  {
+    padding: 200px 30px 10px 30px;
+    .cart-item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        border: 1px solid #ddd;
+        padding: 20px;
+        margin: 10px 0;
+        background-color: #fff;
+      }
+      
+      .item1 {
+        display: flex;
+        align-items: center;
+        margin-bottom: 10px;
+      }
+      
+      .item1 img {
+        width: 100px;
+        height: 100px;
+        object-fit: cover;
+        margin-right: 20px;
+      }
+      
+      .cart-item p {
+        margin: 5px 0;
+      }
+      
+      .rating {
+        display: flex;
+        align-items: center;
+      }
+}

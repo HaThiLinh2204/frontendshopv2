@@ -12,6 +12,7 @@ import axios from "axios";
 import ListOrder from './pages/listOrder';
 import AccessoryList from './pages/listProductUser/accessoryList';
 import HandBagList from './pages/listProductUser/handbagList';
+import ReviewProduct from './pages/reviewProduct';
 
 function UserApp({isLogin, role}) {
   
@@ -28,6 +29,7 @@ function UserApp({isLogin, role}) {
           <Route path="/order" element={<ListOrder/>}/>
           <Route path="/clothes" element={<ClothesList />}/>
           <Route path="/cart" element={<Cart />} />
+          <Route path="/review/:id" element={<ReviewProduct/>}/>
         </Routes>
         <FooterUser />
       </CartItemCountProvider>

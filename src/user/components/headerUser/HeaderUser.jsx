@@ -118,6 +118,9 @@ function HeaderUser() {
         <a className="cart" href="/user/cart">
           <p>Giỏ hàng: ({cartItemCount}) </p>
         </a>
+        <a className="orderList" href="/user/order">
+          <p>Lịch sử </p>
+        </a>
       </div>
     </div>
   );

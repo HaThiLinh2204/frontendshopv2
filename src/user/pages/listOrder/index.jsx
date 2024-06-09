@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import "./index.css";
 import axios from "axios";
-import {Box} from "@mui/material";
+import { useNavigate } from "react-router-dom";
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 
@@ -9,6 +9,7 @@ function ListOrder() {
   const [orderItems, setOrderItems] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 5; 
+  const navigate = useNavigate();
 
   useEffect(() => {
     const userId = parseInt(localStorage.getItem("user_id"));
@@ -43,8 +44,11 @@ function ListOrder() {
 
   const paginatedOrderItems = orderItems.slice(startIndex, endIndex);
 
+  const handleReviewClick = (productId) => {
+    navigate(`/user/review/${productId}`);
+  };
+
   return (
-   
     <div className="order-page">
       <h2>Danh sách sản phẩm đã đặt hàng</h2>
       <div className="order-items">
@@ -60,6 +64,7 @@ function ListOrder() {
             <input type="number" value={item.quantity} readOnly />
             <p>{item.subTotal}</p>
             <p>{item.dateCreated}</p>
+            <button onClick={() => handleReviewClick(item.productId)}>Đánh giá</button>
           </div>
         ))}
       </div>
@@ -79,4 +84,3 @@ function ListOrder() {
 }
 
 export default ListOrder;
-

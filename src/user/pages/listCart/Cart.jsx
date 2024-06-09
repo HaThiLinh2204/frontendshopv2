@@ -150,7 +150,8 @@ function Cart() {
       price: item.price,
       subTotal: item.subTotal,
       productName: item.productName,
-      sizeName: item.sizeName
+      sizeName: item.sizeName,
+      category: item.category
     }));
   
     const orderPromises = normalizedOrderItems.map(orderItem => {
