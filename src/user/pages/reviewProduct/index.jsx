@@ -14,6 +14,7 @@ function ReviewProduct() {
   const [hover, setHover] = useState(-1);
   const [reviewText, setReviewText] = useState('');
   const navigate = useNavigate();
+  const userId = parseInt(localStorage.getItem("user_id")); // Lấy user_id từ localStorage
 
   useEffect(() => {
     const fetchProduct = async () => {
@@ -44,7 +45,7 @@ function ReviewProduct() {
 
   const handleSubmit = async () => {
     try {
-      await axios.post(`http://localhost:8004/products/${id}`, {
+      await axios.post(`http://localhost:8004/reviews/products/${id}/${userId}`, {
         rating,
         comment: reviewText
       }, {
@@ -53,7 +54,7 @@ function ReviewProduct() {
           comment: reviewText
         }
       });
-      navigate('/order');
+      navigate('/user/order');
     } catch (error) {
       console.error("Lỗi khi gửi đánh giá:", error);
     }

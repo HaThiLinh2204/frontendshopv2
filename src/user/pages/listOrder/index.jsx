@@ -48,6 +48,11 @@ function ListOrder() {
     navigate(`/user/review/${productId}`);
   };
 
+  const handleRebuyClick = (productId) => {
+    // Thêm hành động mua lại ở đây
+    console.log(`Rebuy product with id: ${productId}`);
+  };
+
   return (
     <div className="order-page">
       <h2>Danh sách sản phẩm đã đặt hàng</h2>
@@ -64,7 +69,11 @@ function ListOrder() {
             <input type="number" value={item.quantity} readOnly />
             <p>{item.subTotal}</p>
             <p>{item.dateCreated}</p>
-            <button onClick={() => handleReviewClick(item.productId)}>Đánh giá</button>
+            {item.isReviewed ? (
+              <button onClick={() => handleRebuyClick(item.productId)}>Mua lại</button>
+            ) : (
+              <button onClick={() => handleReviewClick(item.productId)}>Đánh giá</button>
+            )}
           </div>
         ))}
       </div>
