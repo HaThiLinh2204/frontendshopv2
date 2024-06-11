@@ -3,6 +3,11 @@
 
 
 
+"email": "linhlinh@gmail.com",
+  "password": "123456"
+
+
+
 {
   "name": "react",
   "version": "0.0.0",

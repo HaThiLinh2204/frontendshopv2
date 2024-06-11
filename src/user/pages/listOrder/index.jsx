@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import "./index.css";
 import axios from "axios";
+import { Box, Button, IconButton, Typography, useTheme } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
@@ -10,6 +11,9 @@ function ListOrder() {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 5; 
   const navigate = useNavigate();
+  const formatCurrency = (value) => {
+    return value.toLocaleString('vi-VN', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+  };
 
   useEffect(() => {
     const userId = parseInt(localStorage.getItem("user_id"));
@@ -49,47 +53,61 @@ function ListOrder() {
   };
 
   const handleRebuyClick = (productId) => {
-    // Thêm hành động mua lại ở đây
     console.log(`Rebuy product with id: ${productId}`);
   };
 
   return (
     <div className="order-page">
       <h2>Danh sách sản phẩm đã đặt hàng</h2>
-      <div className="order-items">
-        {paginatedOrderItems.map((item, index) => (
-          <div className="cart-item" key={index}>
-            <div className="item1">
-              {index + 1}. 
-              <img src={item.imageUrl} alt={item.productName} />
-            </div>
-            <p>{item.productName}</p>
-            <p>{item.sizeName}</p>
-            <p>Giá: {item.price}</p>
-            <input type="number" value={item.quantity} readOnly />
-            <p>{item.subTotal}</p>
-            <p>{item.dateCreated}</p>
-            {item.isReviewed ? (
-              <button onClick={() => handleRebuyClick(item.productId)}>Mua lại</button>
-            ) : (
-              <button onClick={() => handleReviewClick(item.productId)}>Đánh giá</button>
-            )}
-          </div>
-        ))}
-      </div>
-
-      {orderItems.length > itemsPerPage && (
-        <div className="pagination">
-          <button onClick={() => handlePageChange(currentPage - 1)} disabled={currentPage === 1}>
-            <ArrowBackIosIcon/>
-          </button>
-          <button onClick={() => handlePageChange(currentPage + 1)} disabled={currentPage === Math.ceil(orderItems.length / itemsPerPage)}>
-            <ArrowForwardIosIcon/>
-          </button>
-        </div>
+      {orderItems ? (
+         <div className="order-items">
+         {paginatedOrderItems.map((item, index) => (
+           <Box 
+             className="cart-item"
+             key={index}
+             display="grid"
+             gridTemplateColumns="repeat(11, 1fr)"
+             gridAutoRows="140px"
+             gap="20px"
+             alignItems="center"
+            justifyContent="center"
+             
+             >
+             <Box className="item1" gridColumn="span 1"> 
+               <img src={item.imageUrl} alt={item.productName} />
+             </Box>
+             <Box gridColumn="span 3" className="product-name">{item.productName}</Box>
+             <Box gridColumn="span 1">Loại:{item.sizeName}</Box>
+             <Box gridColumn="span 1">Giá: {formatCurrency(item.price)}</Box>
+             <Box gridColumn="span 2">Thành tiền: {formatCurrency(item.subTotal)}Đ</Box>
+             <Box gridColumn="span 2">{item.dateCreated}</Box>
+             <Box gridColumn="span 1">
+             {item.isReviewed ? (
+               <button className ="buy-button" onClick={() => handleRebuyClick(item.productId)}>Mua lại</button>
+             ) : (
+               <button className="comment-button" onClick={() => handleReviewClick(item.productId)}>Đánh giá</button>
+             )}
+             </Box>
+           </Box>
+         ))}
+       </div>
+      ): (
+        <p>Đang tải thông tin sản phẩm...</p>
       )}
+      {orderItems.length > itemsPerPage && (
+         <div className="pagination">
+           <button onClick={() => handlePageChange(currentPage - 1)} disabled={currentPage === 1}>
+             <ArrowBackIosIcon/>
+           </button>
+           <button onClick={() => handlePageChange(currentPage + 1)} disabled={currentPage === Math.ceil(orderItems.length / itemsPerPage)}>
+             <ArrowForwardIosIcon/>
+           </button>
+         </div>
+       )}
+     
     </div>
   );
 }
 
 export default ListOrder;
+

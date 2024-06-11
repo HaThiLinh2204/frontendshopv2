@@ -2,22 +2,41 @@
     padding: 120px 30px 10px 30px;
     .order-items {
         .cart-item {
-            display: grid;
-            gap: 10px;
-            padding: 10px;
-            align-items: center;
-            grid-template-columns:auto auto auto auto auto auto auto;
-            /* .item1 {
-                grid-column-start: 2;
-                grid-column-end: 4;
-            } */
+            .product-name {
+                font-size: 18px;
+            }
             img {
-                width: 90px;
+                width: 100px;
+                border-radius: 10px;
             }
             input {
                 width: 25px;
                 height: 25px;
             }
+            button {
+                border-radius: 20px;
+                width: 100px;
+                height: 25px;
+            }
+            .comment-button {
+                color: #EE4D2D;
+                border-color: red;
+            }
+            .buy-button {
+                color: #ffffff;
+                border-color:#ffffff;
+                background-color: #EE4D2D;
+            }
+
+        }
+
+    }
+    .pagination {
+        position: absolute;
+        right: 40px;
+        button {
+            border: none;
+            background-color: transparent;
         }
     }
 }

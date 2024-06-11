@@ -17,6 +17,9 @@ function ProductDetail() {
   const [selectedSize, setSelectedSize] = useState(null);
   const [selectedQuantity, setSelectedQuantity] = useState(1);
   const { cartItemCount, setCartItemCount } = useCartItemCount();
+  const formatCurrency = (value) => {
+    return value.toLocaleString('vi-VN', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+  };
   const navigate = useNavigate();
 
   const updateCartItemCount = () => {
@@ -123,7 +126,7 @@ function ProductDetail() {
         <div className="product_description">
           <h2 className="product_name">{products.name}</h2>
           <div className="product_reviews">
-            <Rating name="read-only" value={products.averageRating || 0} readOnly />
+            <Rating name="read-only" value={products.averageRating || 0} precision={0.1} readOnly />
             <span>({products.reviewCount || 0} đánh giá)</span>
           </div>
           <span
@@ -135,7 +138,7 @@ function ProductDetail() {
               marginLeft: "45px",
             }}
           >
-            {products.price} đ
+            {formatCurrency(products.price)} đ
           </span>
           <div className="sizesSelect">
             <h4>Chọn size:</h4>
@@ -168,11 +171,12 @@ function ProductDetail() {
               onChange={(e) => setSelectedQuantity(e.target.value)}
             />
           </div>
-          <div style={{ marginTop: "20px" }}>
+          <div style={{ marginTop: "20px", display: "flex" }}>
             <button
               className="addToCartButton"
               onClick={handleAddToCart}
             >
+              <AddShoppingCartIcon/>
               Thêm vào giỏ hàng
             </button>
             <button

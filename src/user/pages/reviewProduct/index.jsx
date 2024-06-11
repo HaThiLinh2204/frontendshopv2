@@ -14,7 +14,10 @@ function ReviewProduct() {
   const [hover, setHover] = useState(-1);
   const [reviewText, setReviewText] = useState('');
   const navigate = useNavigate();
-  const userId = parseInt(localStorage.getItem("user_id")); // Lấy user_id từ localStorage
+  const userId = parseInt(localStorage.getItem("user_id"));
+  const formatCurrency = (value) => {
+    return value.toLocaleString('vi-VN', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+  };
 
   useEffect(() => {
     const fetchProduct = async () => {
@@ -68,10 +71,10 @@ function ReviewProduct() {
           <div className="item1">
             <img src={product.imageUrl} alt={product.name} />
           </div>
-          <p>{product.name}</p>
+          <p className="product-name">{product.name}</p>
           <p>{product.description}</p>
-          <p>Giá: {product.price}</p>
-          <p>Sale: {product.saleprice}</p>
+          <p>Giá: {formatCurrency(product.saleprice)}</p>
+          <p>Thành tiền: {formatCurrency(product.saleprice)}đ</p>
 
           <Rating
             name="hover-feedback"
