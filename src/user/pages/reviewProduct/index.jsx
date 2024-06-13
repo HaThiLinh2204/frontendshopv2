@@ -8,7 +8,7 @@ import TextField from '@mui/material/TextField';
 import './index.css';  // import CSS cho style
 
 function ReviewProduct() {
-  const { id } = useParams();
+  const { id, productId } = useParams();
   const [product, setProduct] = useState(null);
   const [rating, setRating] = useState(0);
   const [hover, setHover] = useState(-1);
@@ -22,9 +22,11 @@ function ReviewProduct() {
   useEffect(() => {
     const fetchProduct = async () => {
       try {
-        const response = await axios.get(`http://localhost:8004/product/${id}`);
-        const imageResponse = await axios.get(`http://localhost:8004/product/image/${id}?limit=1`);
+        const response = await axios.get(`http://localhost:8004/order/orderItem/${id}`);
+        const imageResponse = await axios.get(`http://localhost:8004/product/image/${productId}?limit=1`);
         const imageUrl = imageResponse.data[0]?.imageUrl || "";
+        console.log('dataaaa', response.data);
+        console.log('idddd', productId);
         setProduct({ ...response.data, imageUrl });
       } catch (error) {
         console.error("Lỗi khi lấy thông tin sản phẩm:", error);
@@ -32,7 +34,7 @@ function ReviewProduct() {
     };
 
     fetchProduct();
-  }, [id]);
+  }, [id, productId]);
 
   const handleRatingChange = (event, newValue) => {
     setRating(newValue);
@@ -46,22 +48,45 @@ function ReviewProduct() {
     setReviewText(event.target.value);
   };
 
+  // const handleSubmit = async () => {
+  //   try {
+  //     await axios.post(`http://localhost:8004/reviews/products/${id}/${userId}`, {
+  //       rating,
+  //       comment: reviewText
+  //     }, {
+  //       params: {
+  //         rating,
+  //         comment: reviewText
+  //       }
+  //     });
+  //     navigate('/user/order');
+  //   } catch (error) {
+  //     console.error("Lỗi khi gửi đánh giá:", error);
+  //   }
+  // };
   const handleSubmit = async () => {
     try {
-      await axios.post(`http://localhost:8004/reviews/products/${id}/${userId}`, {
-        rating,
-        comment: reviewText
-      }, {
-        params: {
+      const response = await axios.post(
+        `http://localhost:8004/reviews/add/orderItem/${id}`,
+        {
           rating,
           comment: reviewText
+        },
+        {
+          params: {
+            rating,
+            comment: reviewText
+          }
         }
-      });
+      );
+      // Assuming response.data contains the newly created review object if successful
+      console.log("Review created:", response.data);
       navigate('/user/order');
     } catch (error) {
       console.error("Lỗi khi gửi đánh giá:", error);
     }
   };
+  
 
   return (
     <div className="review-page">
@@ -73,8 +98,8 @@ function ReviewProduct() {
           </div>
           <p className="product-name">{product.name}</p>
           <p>{product.description}</p>
-          <p>Giá: {formatCurrency(product.saleprice)}</p>
-          <p>Thành tiền: {formatCurrency(product.saleprice)}đ</p>
+          <p>Giá: {formatCurrency(product.price)}</p>
+          <p>Thành tiền: {formatCurrency(product.subTotal)}đ</p>
 
           <Rating
             name="hover-feedback"

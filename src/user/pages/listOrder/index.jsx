@@ -48,11 +48,24 @@ function ListOrder() {
 
   const paginatedOrderItems = orderItems.slice(startIndex, endIndex);
 
-  const handleReviewClick = (productId) => {
-    navigate(`/user/review/${productId}`);
+  const handleReviewClick = (orderItemId, productId) => {
+    console.log('AAA', orderItemId,productId);
+    navigate(`/user/review/${orderItemId}/${productId}`);
   };
 
-  const handleRebuyClick = (productId) => {
+  const handleRebuyClick = async (productId) => {
+    try {
+      const response = await axios.get(`http://localhost:8004/product/${productId}`);
+      const product = response.data;
+  
+      if (product.isDeleted) {
+        alert('Sản phẩm không còn tồn tại');
+      } else {
+        navigate(`/user/products/${productId}`);
+      }
+    } catch (error) {
+      console.error('Error fetching product details:', error);
+    }
     console.log(`Rebuy product with id: ${productId}`);
   };
 
@@ -71,7 +84,6 @@ function ListOrder() {
              gap="20px"
              alignItems="center"
             justifyContent="center"
-             
              >
              <Box className="item1" gridColumn="span 1"> 
                <img src={item.imageUrl} alt={item.productName} />
@@ -85,7 +97,7 @@ function ListOrder() {
              {item.isReviewed ? (
                <button className ="buy-button" onClick={() => handleRebuyClick(item.productId)}>Mua lại</button>
              ) : (
-               <button className="comment-button" onClick={() => handleReviewClick(item.productId)}>Đánh giá</button>
+               <button className="comment-button" onClick={() => handleReviewClick(item.id, item.productId)}>Đánh giá</button>
              )}
              </Box>
            </Box>

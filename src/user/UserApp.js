@@ -29,7 +29,7 @@ function UserApp({isLogin, role}) {
           <Route path="/order" element={<ListOrder/>}/>
           <Route path="/clothes" element={<ClothesList />}/>
           <Route path="/cart" element={<Cart />} />
-          <Route path="/review/:id" element={<ReviewProduct/>}/>
+          <Route path="/review/:id/:productId" element={<ReviewProduct />} />
         </Routes>
         <FooterUser />
       </CartItemCountProvider>

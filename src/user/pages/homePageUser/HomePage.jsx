@@ -1,11 +1,42 @@
 import "./HomePage.css";
-
+import React, { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
+import axios from "axios";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay, Navigation, Pagination, FreeMode } from "swiper";
 import "swiper/css/free-mode";
 import "swiper/swiper.min.css";
 
 export default function HomePage() {
+  const [newProducts, setNewProducts] = useState([]);
+
+  useEffect(() => {
+    axios
+      .get("http://localhost:8004/products")
+      .then((response) => {
+        const products = response.data;
+        const sortedProducts = products.sort(
+          (a, b) => new Date(b.createdDate) - new Date(a.createdDate)
+        );
+        const topNewProducts = sortedProducts.slice(0, 10);
+
+        const fetchImages = topNewProducts.map((product) =>
+          axios
+            .get(`http://localhost:8004/product/image/${product.product_id}?limit=1`)
+            .then((imgResponse) => {
+              product.imageUrl = imgResponse.data[0]?.imageUrl || "";
+              return product;
+            })
+        );
+
+        Promise.all(fetchImages).then((productsWithImages) => {
+          setNewProducts(productsWithImages);
+        });
+      })
+      .catch((error) => {
+        console.error("Error fetching products:", error);
+      });
+  }, []);
   return (
     <div className="homepage-contaner">
       <div className="main">
@@ -73,69 +104,13 @@ export default function HomePage() {
                 modules={[FreeMode, Pagination]}
                 className="mySwiper"
               >
-                <SwiperSlide>
-                  <img
-                    src="https://product.hstatic.net/200000182297/product/19_1a7f48efa9334740b7969673890dfb45_1024x1024.jpg"
-                    alt=""
-                  />
-                  <a href="/">XEM CHI TIÊT</a>
-                </SwiperSlide>
-                <SwiperSlide>
-                  <img
-                    src="https://down-vn.img.susercontent.com/file/vn-11134201-23030-nwb7m99pgiov7e"
-                    alt=""
-                  />
-                  <a href="/">XEM CHI TIÊT</a>
-                </SwiperSlide>
-                <SwiperSlide>
-                  <img
-                    src="https://down-vn.img.susercontent.com/file/vn-11134201-23030-r4nf029pgiovcd"
-                    alt=""
-                  />
-                  <a href="/">XEM CHI TIÊT</a>
-                </SwiperSlide>
-                <SwiperSlide>
-                  <img
-                    src="https://down-vn.img.susercontent.com/file/cc1057e9becd0dba2b44108540e130bd"
-                    alt=""
-                  />
-                  <a href="/">XEM CHI TIÊT</a>
-                </SwiperSlide>
-                <SwiperSlide>
-                  <img
-                    src="https://down-vn.img.susercontent.com/file/sg-11134201-23010-o7sw8p9so4lv84"
-                    alt=""
-                  />
-                  <a href="/">XEM CHI TIÊT</a>
-                </SwiperSlide>
-                <SwiperSlide>
-                  <img
-                    src="https://down-vn.img.susercontent.com/file/vn-11134201-23020-zqptd09tdunv1a"
-                    alt=""
-                  />
-                  <a href="/">XEM CHI TIÊT</a>
-                </SwiperSlide>
-                <SwiperSlide>
-                  <img
-                    src="https://down-vn.img.susercontent.com/file/vn-11134201-23020-djqiigwtdunv62"
-                    alt=""
-                  />
-                  <a href="/">XEM CHI TIÊT</a>
-                </SwiperSlide>
-                <SwiperSlide>
-                  <img
-                    src="https://product.hstatic.net/200000182297/product/18_6b8399c75fce42a787837ed787e5a268_1024x1024.jpg"
-                    alt=""
-                  />
-                  <a href="/">XEM CHI TIÊT</a>
-                </SwiperSlide>
-                <SwiperSlide>
-                  <img
-                    src="https://down-vn.img.susercontent.com/file/vn-11134201-23030-bb8ab69pgiov89"
-                    alt=""
-                  />
-                  <a href="/">XEM CHI TIÊT</a>
-                </SwiperSlide>
+                {newProducts.map((product) => (
+                  <SwiperSlide key={product.product_id}>
+                    <Link to={`/user/products/${product.product_id}`}>
+                      <img style={{ width: "300px", height: "300px", objectFit: "scale-down" }} src={product.imageUrl} alt={product.name} />
+                    </Link>
+                  </SwiperSlide>
+                ))}
               </Swiper>
             </div>
           </div>

@@ -144,9 +144,6 @@ function AccessoryList() {
                   <div className="item-information">
                     <div className="item-name">{accessory.name}</div>
                     <div className="item-price">{formatCurrency(accessory.price)}đ</div>
-                    {/* <button class="buy-item-button">
-                      <span class="item-button">Mua hàng</span>
-                    </button> */}
                   </div>
                 </Link>
               </div>

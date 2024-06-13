@@ -16,6 +16,8 @@ function ProductDetail() {
   const [productSizes, setProductSizes] = useState([]);
   const [selectedSize, setSelectedSize] = useState(null);
   const [selectedQuantity, setSelectedQuantity] = useState(1);
+  const [reviews, setReviews] = useState([]);
+  const [quantitySold, setQuantitySold] = useState(0);
   const { cartItemCount, setCartItemCount } = useCartItemCount();
   const formatCurrency = (value) => {
     return value.toLocaleString('vi-VN', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
@@ -60,6 +62,24 @@ function ProductDetail() {
       })
       .catch((error) => {
         console.error("Error fetching products sizes:", error);
+      });
+
+    axios
+      .get(`http://localhost:8004/reviews/products/${id}`)
+      .then((response) => {
+        setReviews(response.data);
+      })
+      .catch((error) => {
+        console.error("Error fetching product reviews:", error);
+      });
+
+    axios
+      .get(`http://localhost:8004/product/${id}/quantitySold`)
+      .then((response) => {
+        setQuantitySold(response.data);
+      })
+      .catch((error) => {
+        console.error("Error fetching quantity sold:", error);
       });
   }, [id]);
 
@@ -126,8 +146,14 @@ function ProductDetail() {
         <div className="product_description">
           <h2 className="product_name">{products.name}</h2>
           <div className="product_reviews">
-            <Rating name="read-only" value={products.averageRating || 0} precision={0.1} readOnly />
-            <span>({products.reviewCount || 0} đánh giá)</span>
+            <Rating
+              name="read-only"
+              value={products.averageRating || 0}
+              precision={0.1}
+              readOnly
+            />
+            {/* <span>({products.reviewCount || 0} đánh giá)</span> */}
+            <span style={{ marginLeft: "10px" }}>Đã bán: {quantitySold}</span>
           </div>
           <span
             style={{
@@ -149,9 +175,7 @@ function ProductDetail() {
                 onClick={() => setSelectedSize(sizeproducts.sizeId)}
                 style={{
                   color:
-                    selectedSize === sizeproducts.sizeId
-                      ? "#ffffff"
-                      : "#000",
+                    selectedSize === sizeproducts.sizeId ? "#ffffff" : "#000",
                   backgroundColor:
                     selectedSize === sizeproducts.sizeId
                       ? "#EE4D2D"
@@ -172,17 +196,11 @@ function ProductDetail() {
             />
           </div>
           <div style={{ marginTop: "20px", display: "flex" }}>
-            <button
-              className="addToCartButton"
-              onClick={handleAddToCart}
-            >
-              <AddShoppingCartIcon/>
+            <button className="addToCartButton" onClick={handleAddToCart}>
+              <AddShoppingCartIcon />
               Thêm vào giỏ hàng
             </button>
-            <button
-              className="buyButton"
-              onClick={handleAddToCartAndBuy}
-            >
+            <button className="buyButton" onClick={handleAddToCartAndBuy}>
               Mua ngay
             </button>
           </div>
@@ -193,6 +211,34 @@ function ProductDetail() {
         <p style={{ fontSize: "20px", marginTop: "5px" }}>
           {products.description}
         </p>
+      </div>
+      <div style={{ marginTop: "20px" }}>
+        <p style={{ fontWeight: "bold" }}>ĐÁNH GIÁ :</p>
+        <div className="total-reviews">
+          <Rating
+            name="read-only"
+            value={products.averageRating || 0}
+            precision={0.1}
+            readOnly
+          />
+          <span> ({products.reviewCount || 0} đánh giá)</span>
+        </div>
+        {reviews.length > 0 ? (
+          reviews.map((review, index) => (
+            <div
+              key={review.id}
+              className="item-review"
+            >
+              <div style = {{ display: "flex", alignItems: "center"}}>
+               {index + 1}.
+                <Rating value={review.rating} readOnly className="rating" />
+              </div>
+              <div className="comment">{review.comment}</div>
+            </div>
+          ))
+        ) : (
+          <p>Chưa có đánh giá nào.</p>
+        )}
       </div>
     </div>
   );

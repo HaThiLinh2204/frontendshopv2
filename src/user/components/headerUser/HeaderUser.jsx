@@ -3,6 +3,7 @@ import "./Header.css";
 import { useLocation } from "react-router-dom";
 import axios from "axios";
 import { useCartItemCount } from "../../service/CartItemCountContext";
+import AddShoppingCartIcon from '@mui/icons-material/AddShoppingCart';
 
 function HeaderUser() {
   const location = useLocation();
@@ -116,7 +117,7 @@ function HeaderUser() {
           <p>Tài khoản</p>
         </a>
         <a className="cart" href="/user/cart">
-          <p>Giỏ hàng: ({cartItemCount}) </p>
+          <p><AddShoppingCartIcon/>({cartItemCount}) </p>
         </a>
         <a className="orderList" href="/user/order">
           <p>Lịch sử </p>

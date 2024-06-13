@@ -2,13 +2,19 @@ import React, { useState, useEffect } from "react";
 import "./Cart.css";
 import axios from "axios";
 import { useCartItemCount } from "../../service/CartItemCountContext";
+import { Box, Button, IconButton, Typography, useTheme } from "@mui/material";
 import { useNavigate } from "react-router-dom";
+import DeleteIcon from '@mui/icons-material/Delete';
+import RemoveShoppingCartIcon from '@mui/icons-material/RemoveShoppingCart';
 
 function Cart() {
   const [cartItems, setCartItems] = useState([]);
   const [selectAll, setSelectAll] = useState(false);
   const { cartItemCount, setCartItemCount } = useCartItemCount();
   const navigate = useNavigate();
+  const formatCurrency = (value) => {
+    return value.toLocaleString('vi-VN', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+  };
 
 
   const updateCartItemCount = () => {
@@ -180,42 +186,91 @@ function Cart() {
       <div className="cart-container">
         <h2>Giỏ hàng</h2>
         <div>
-          <div className="cart-header">
-            <input
-              type="checkbox"
-              checked={selectAll}
-              onChange={handleSelectAllChange}
-            />
-            <h3 className="item1">Sản phẩm</h3>
-            <h3>Tên sản phẩm</h3>
+          <Box
+            className="cart-header"
+            display="grid"
+            gridTemplateColumns="repeat(11, 1fr)"
+            gridAutoRows="140px"
+            gap="20px"
+            alignItems="center"
+            justifyContent="center"
+          >
+            <Box gridColumn="span 1">
+              <input
+                type="checkbox"
+                checked={selectAll}
+                onChange={handleSelectAllChange}
+              />
+            </Box>
+            <Box gridColumn="span 4">
+              <h3 className="item1">Sản phẩm</h3>
+            </Box>
+            <Box gridColumn="span 1">
             <h3>Phân loại</h3>
-            <h3>Số lượng</h3>
+            </Box>
+            <Box gridColumn="span 1">
             <h3>Số tiền</h3>
-            <h3>Xóa</h3>
-          </div>
+            </Box>
+            <Box gridColumn="span 1">
+              <h3>số lượng</h3>
+            </Box>
+            <Box gridColumn="span 2">
+              <h3>Thành tiền</h3>
+            </Box>
+            <Box gridColumn="span 1">
+              <h3>Xóa</h3>
+            </Box>
+          </Box>
+          {cartItems ? (
+            <div className="cart-items">
+              {cartItems.map((item, index) => (
+                <Box
+                  className="cart-item"
+                  key={index}
+                  display="grid"
+                  gridTemplateColumns="repeat(11, 1fr)"
+                  gridAutoRows="140px"
+                  gap="20px"
+                  alignItems="center"
+                  justifyContent="center"
+                >
+                  <Box gridColumn="span 1">
+                    <input
+                      type="checkbox"
+                      checked={item.selected || false}
+                      onChange={() => handleCheckboxChange(index)}
+                    />
+                  </Box>
+                  <Box className="item1" gridColumn="span 1">
+                    <img src={item.imageUrl} alt={item.productName} />
+                  </Box>
+                  <Box gridColumn="span 3" className="product-name">
+                    {item.productName}
+                  </Box>
+                  <Box gridColumn="span 1">Loại:{item.sizeName}</Box>
+                  <Box gridColumn="span 1">
+                    Giá: {formatCurrency(item.price)}
+                  </Box>
+                  <Box gridColumn="span 1">
+                    <input type="number" value={item.quantity} readOnly />
+                  </Box>
+                  <Box gridColumn="span 2">
+                    {formatCurrency(item.subTotal)}Đ
+                  </Box>
+                  <Box gridColumn="span 1">
+                    <button onClick={() => handleDeleteItem(index)}>
+                      <DeleteIcon style={{ border: "none" }} />
+                    </button>
+                  </Box>
+                </Box>
+              ))}
+            </div>
+          ) : (
+            <p>Đang tải thông tin sản phẩm...</p>
+          )}
 
-          <div className="cart-items">
-            {cartItems.map((item, index) => (
-              <div className="cart-item" key={index}>
-                <input
-                  type="checkbox"
-                  checked={item.selected || false}
-                  onChange={() => handleCheckboxChange(index)}
-                />
-                <div className="item1">
-                  <img src={item.imageUrl} alt={item.productName} />
-                </div>
-                <p>{item.productName}</p>
-                <p>{item.sizeName}</p>
-                <p>Giá: {item.price}</p>
-                <input type="number" value={item.quantity} readOnly />
-                <p>{item.subTotal}</p>
-                <button onClick={() => handleDeleteItem(index)}>Xóa</button>
-              </div>
-            ))}
-          </div>
           <button onClick={handleDeleteSelectedItems}>
-            Xóa các sản phẩm được chọn
+            <RemoveShoppingCartIcon/>
           </button>
         </div>
         <button
@@ -226,6 +281,10 @@ function Cart() {
             position: "absolute",
             right: "20px",
             fontSize: "20px",
+            borderRadius: "10px",
+            width: "150px",
+            height:  "40px",
+            cursor: "pointer"
           }}
         >
           Đặt hàng
