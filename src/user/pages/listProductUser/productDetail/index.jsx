@@ -88,13 +88,19 @@ function ProductDetail() {
   }
 
   const handleAddToCartAndBuy = () => {
+    const userId = parseInt(localStorage.getItem("user_id"));
     handleAddToCart();
-    if (selectedSize) {
+    if (selectedSize && userId) {
       navigate(`/user/cart`);
     }
   };
 
   const handleAddToCart = () => {
+    const userId = parseInt(localStorage.getItem("user_id"));
+     if (!userId) {
+      alert("Vui lòng đăng nhập để thêm sản phẩm vào giỏ hàng.");
+      return;
+    }
     if (!selectedSize) {
       alert("Vui lòng chọn size.");
     } else {

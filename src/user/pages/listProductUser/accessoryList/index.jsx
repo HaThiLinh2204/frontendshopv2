@@ -54,7 +54,7 @@ function AccessoryList() {
     };
     const filteredproducts = products.filter((accessory) => {
         console.log('products', products);
-      const accessoryPrice = parseInt(accessory.price);
+      const accessoryPrice = parseInt(accessory.saleprice);
       if (minPrice && maxPrice) {
         return (
             accessoryPrice >= parseInt(minPrice) &&
@@ -143,7 +143,7 @@ function AccessoryList() {
                   </div>
                   <div className="item-information">
                     <div className="item-name">{accessory.name}</div>
-                    <div className="item-price">{formatCurrency(accessory.price)}đ</div>
+                    <div className="item-price">{formatCurrency(accessory.saleprice)}đ</div>
                   </div>
                 </Link>
               </div>

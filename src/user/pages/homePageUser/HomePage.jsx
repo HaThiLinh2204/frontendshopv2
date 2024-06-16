@@ -107,7 +107,7 @@ export default function HomePage() {
                 {newProducts.map((product) => (
                   <SwiperSlide key={product.product_id}>
                     <Link to={`/user/products/${product.product_id}`}>
-                      <img style={{ width: "300px", height: "300px", objectFit: "scale-down" }} src={product.imageUrl} alt={product.name} />
+                      <img style={{ width: "300px", height: "300px" }} src={product.imageUrl} alt={product.name} />
                     </Link>
                   </SwiperSlide>
                 ))}

@@ -23,7 +23,7 @@ function Login({isLoggedIn, role, setIsLoggedIn, setRole}) {
   return (
     <div className="loginPage">
       <form className="wrapper">
-        <h2>LOGIN PAGE</h2>
+        <h2>ĐĂNG NHẬP</h2>
         <section className="group">
           <label htmlFor="email" className="label">
             Email
@@ -52,8 +52,9 @@ function Login({isLoggedIn, role, setIsLoggedIn, setRole}) {
           />
         </section>
         <button type="button" className="btn" onClick={handleLogin}>
-          LOGIN
+          Đăng nhập
         </button>
+        <div> Chưa có tài khoản? <Link to="/register" className="user">Đăng ký</Link></div>
         <span className="footer"></span>
       </form>
     </div>

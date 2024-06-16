@@ -293,7 +293,7 @@ const Dashboard = () => {
                 fontWeight="600"
                 color={colors.grey[100]}
               >
-                THỐNG KÊ DOANH THU THEO NGÀY
+                THỐNG KÊ DOANH THU 6 THÁNG GẦN ĐÂY NHẤT
               </Typography>
               <Typography
                 variant="h4"
@@ -355,7 +355,7 @@ const Dashboard = () => {
           </Box>
         </Box>
         <Box
-          gridColumn="span 2"
+          gridColumn="span 5"
           gridRow="span 2"
           backgroundColor={colors.primary[400]}
         >
@@ -369,23 +369,6 @@ const Dashboard = () => {
           <Box height="250px" mt="-20px">
             <BarChart isDashboard={true} />
           </Box>
-        </Box>
-        <Box
-          gridColumn="span 2"
-          gridRow="span 2"
-          backgroundColor={colors.primary[400]}
-          padding="30px"
-        >
-          <Typography
-            variant="h5"
-            fontWeight="600"
-            sx={{ marginBottom: "15px" }}
-          >
-            Geography Based Traffic
-          </Typography>
-          {/* <Box height="200px">
-            <GeographyChart isDashboard={true} />
-          </Box> */}
         </Box>
       </Box>
       

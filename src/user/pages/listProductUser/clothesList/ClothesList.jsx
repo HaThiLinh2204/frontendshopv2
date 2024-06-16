@@ -48,7 +48,7 @@ function ClothesList() {
     setMaxPrice(event.target.value);
   };
   const filteredproducts = products.filter((product) => {
-    const productPrice = parseInt(product.price);
+    const productPrice = parseInt(product.saleprice);
     if (minPrice && maxPrice) {
       return (
         productPrice >= parseInt(minPrice) &&
@@ -130,7 +130,7 @@ function ClothesList() {
                   </div>
                   <div className="item-information">
                     <div className="item-name">{accessory.name}</div>
-                    <div className="item-price">{formatCurrency(accessory.price)}đ</div>
+                    <div className="item-price">{formatCurrency(accessory.saleprice)}đ</div>
                     {/* <button class="buy-item-button">
                       <span class="item-button">Mua hàng</span>
                     </button> */}

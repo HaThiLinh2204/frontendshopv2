@@ -1,20 +1,36 @@
 import React, { useState, useEffect } from "react";
 import "./Header.css";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { useCartItemCount } from "../../service/CartItemCountContext";
 import AddShoppingCartIcon from '@mui/icons-material/AddShoppingCart';
 
 function HeaderUser() {
   const location = useLocation();
+  const navigate = useNavigate();
   const [selectedTab, setSelectedTab] = useState("home");
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const { cartItemCount, setCartItemCount } = useCartItemCount();
+
   const handleTabClick = (tab) => {
     setSelectedTab(tab);
   };
-  const { cartItemCount, setCartItemCount } = useCartItemCount();
+
+  const handleLogOut = () => {
+    setIsLoggedIn(false);
+    localStorage.removeItem("access_token");
+    localStorage.removeItem("user_id");
+    localStorage.removeItem("isLogin");
+    localStorage.removeItem("role");
+    navigate("/user/homepage");
+  };
 
   useEffect(() => {
     const userId = parseInt(localStorage.getItem("user_id"));
+    const token = localStorage.getItem("access_token");
+    if (token) {
+      setIsLoggedIn(true);
+    }
     const path = location.pathname;
     switch (path) {
       case "/user/homepage":
@@ -38,10 +54,6 @@ function HeaderUser() {
       default:
         setSelectedTab("home");
         break;
-    }
-    if (!userId) {
-      alert("Vui lòng đăng nhập để thêm sản phẩm vào giỏ hàng.");
-      return;
     }
     axios
       .get(`http://localhost:8004/cart/${userId}/items/count`)
@@ -113,11 +125,17 @@ function HeaderUser() {
         </div>
       </div>
       <div className="rightbar">
-        <a href="/login" className="user">
-          <p>Tài khoản</p>
-        </a>
+        {isLoggedIn ? (
+          <a className="user" onClick={handleLogOut}>
+            <p>Đăng xuất</p>
+          </a>
+        ) : (
+          <a href="/login" className="user">
+            <p>Đăng nhập</p>
+          </a>
+        )}
         <a className="cart" href="/user/cart">
-          <p><AddShoppingCartIcon/>({cartItemCount}) </p>
+          <p><AddShoppingCartIcon />({cartItemCount}) </p>
         </a>
         <a className="orderList" href="/user/order">
           <p>Lịch sử </p>
@@ -126,4 +144,5 @@ function HeaderUser() {
     </div>
   );
 }
+
 export default HeaderUser;

@@ -1,15 +1,92 @@
 import { ResponsiveLine } from "@nivo/line";
 import { useTheme } from "@mui/material";
 import { tokens } from "../../theme";
-import { mockLineData as data } from "../data/mockData";
+import React, { useEffect, useState } from 'react';
+import axios from 'axios';
 
 const LineChart = ({ isCustomLineColors = false, isDashboard = false }) => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
+  const [lineData, setLineData] = useState([]);
+  const businessMetricsId = 1; 
+  const categories = ['SHOE', 'CLOTHES', 'HANDBAG', 'ACCESSORY'];
+
+  function getLastSixMonths() {
+    const months = [];
+    const today = new Date();
+    for (let i = 0; i < 6; i++) {
+      const date = new Date(today.getFullYear(), today.getMonth() - i, 1);
+      months.push({
+        month: date.getMonth() + 1,
+        year: date.getFullYear()
+      });
+    }
+    return months.reverse();
+  };
+
+  async function getRevenue(businessMetricsId, month, year, category) {
+    try {
+      const response = await axios.get(`http://localhost:8004/business-metrics/${businessMetricsId}/revenue/month/${category}`, {
+        params: { month, year }
+      });
+      return response.data;
+    } catch (error) {
+      console.error(`Error fetching revenue for ${month}/${year} and category ${category}:`, error);
+      return 0;
+    }
+  };
+
+  async function fetchRevenues(businessMetricsId) {
+    const months = getLastSixMonths();
+    const revenues = {};
+
+    for (const category of categories) {
+      revenues[category] = [];
+      for (const { month, year } of months) {
+        const revenue = await getRevenue(businessMetricsId, month, year, category);
+        revenues[category].push({ month, year, revenue });
+      }
+    }
+
+    return revenues;
+  };
+
+  useEffect(() => {
+    fetchRevenues(businessMetricsId).then(revenues => {
+      const formattedData = [
+        {
+          id: "Giày dép",
+          color: tokens("dark").greenAccent[500],
+          data: revenues.SHOE.map(item => ({ x: "Tháng " + item.month, y: item.revenue })),
+        },
+        {
+          id: "Quần áo",
+          color: tokens("dark").blueAccent[300],
+          data: revenues.CLOTHES.map(item => ({ x: "Tháng " + item.month, y: item.revenue })),
+        },
+        {
+          id: "Túi xách",
+          color: tokens("dark").redAccent[200],
+          data: revenues.HANDBAG.map(item => ({ x: "Tháng " + item.month, y: item.revenue })),
+        },
+        {
+          id: "Phụ kiện",
+          color: tokens("dark").redAccent[500],
+          data: revenues.ACCESSORY.map(item => ({ x: "Tháng " + item.month, y: item.revenue })),
+        },
+      ];
+      console.log('Formatted Data for LineChart:', formattedData);
+      setLineData(formattedData);
+    });
+  }, []);
+
+  const formatCurrency = (value) => {
+    return value.toLocaleString('vi-VN', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+  };
 
   return (
     <ResponsiveLine
-      data={data}
+      data={lineData}
       theme={{
         axis: {
           domain: {
@@ -29,6 +106,7 @@ const LineChart = ({ isCustomLineColors = false, isDashboard = false }) => {
             },
             text: {
               fill: colors.grey[100],
+              tickPadding: 15 // Adding padding to avoid cutting off the labels
             },
           },
         },
@@ -44,16 +122,16 @@ const LineChart = ({ isCustomLineColors = false, isDashboard = false }) => {
         },
       }}
       colors={isDashboard ? { datum: "color" } : { scheme: "nivo" }} // added
-      margin={{ top: 50, right: 110, bottom: 50, left: 60 }}
+      margin={{ top: 50, right: 110, bottom: 50, left: 80 }} // Increase left margin
       xScale={{ type: "point" }}
       yScale={{
         type: "linear",
-        min: "auto",
-        max: "auto",
-        stacked: true,
+        min: 0, // Setting minimum to 0
+        max: "auto", // Let Nivo calculate the max value based on your data
+        stacked: false, // Ensure it is not stacked to avoid cumulative effect
         reverse: false,
       }}
-      yFormat=" >-.2f"
+      yFormat={formatCurrency} // Use formatCurrency function
       curve="catmullRom"
       axisTop={null}
       axisRight={null}
@@ -62,19 +140,19 @@ const LineChart = ({ isCustomLineColors = false, isDashboard = false }) => {
         tickSize: 0,
         tickPadding: 5,
         tickRotation: 0,
-        legend: isDashboard ? undefined : "transportation", // added
+        legend: isDashboard ? undefined : "Tháng", // added
         legendOffset: 36,
         legendPosition: "middle",
       }}
       axisLeft={{
         orient: "left",
-        tickValues: 5, // added
-        tickSize: 3,
-        tickPadding: 5,
+        tickSize: 5,
+        tickPadding: 15, // Adding padding to avoid cutting off the labels
         tickRotation: 0,
-        legend: isDashboard ? undefined : "count", // added
-        legendOffset: -40,
+        legend: isDashboard ? undefined : "Doanh thu", // added
+        legendOffset: -60, // Move legend to the right
         legendPosition: "middle",
+        format: formatCurrency // Format y-axis ticks using formatCurrency
       }}
       enableGridX={false}
       enableGridY={false}

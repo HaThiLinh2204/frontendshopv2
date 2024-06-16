@@ -53,7 +53,7 @@ function HandBagList() {
     };
     const filteredproducts = products.filter((handbag) => {
         console.log('products', products);
-      const handbagPrice = parseInt(handbag.price);
+      const handbagPrice = parseInt(handbag.saleprice);
       if (minPrice && maxPrice) {
         return (
             handbagPrice >= parseInt(minPrice) &&
@@ -142,7 +142,7 @@ function HandBagList() {
                   </div>
                   <div className="item-information">
                     <div className="item-name">{handbag.name}</div>
-                    <div className="item-price">{formatCurrency(handbag.price)}đ</div>
+                    <div className="item-price">{formatCurrency(handbag.saleprice)}đ</div>
                   </div>
                 </Link>
               </div>
