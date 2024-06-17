@@ -4,7 +4,7 @@ import { tokens } from "../../theme";
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 
-const LineChart = ({ isCustomLineColors = false, isDashboard = false }) => {
+const LineChart = ({ isCustomLineColors = false, isDashboard = false, dataType }) => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
   const [lineData, setLineData] = useState([]);
@@ -24,7 +24,7 @@ const LineChart = ({ isCustomLineColors = false, isDashboard = false }) => {
     return months.reverse();
   };
 
-  async function getRevenue(businessMetricsId, month, year, category) {
+  async function getRevenueByCategory(businessMetricsId, month, year, category) {
     try {
       const response = await axios.get(`http://localhost:8004/business-metrics/${businessMetricsId}/revenue/month/${category}`, {
         params: { month, year }
@@ -36,48 +36,93 @@ const LineChart = ({ isCustomLineColors = false, isDashboard = false }) => {
     }
   };
 
-  async function fetchRevenues(businessMetricsId) {
+  async function getRevenue(businessMetricsId, month, year) {
+    try {
+      const response = await axios.get(`http://localhost:8004/business-metrics/${businessMetricsId}/revenue/month`, {
+        params: { month, year }
+      });
+      return response.data;
+    } catch (error) {
+      console.error(`Error fetching revenue for ${month}/${year}:`, error);
+      return 0;
+    }
+  }
+
+  async function fetchRevenuesByCategory(businessMetricsId) {
     const months = getLastSixMonths();
-    const revenues = {};
+    const revenuesByCategory = {};
 
     for (const category of categories) {
-      revenues[category] = [];
+      revenuesByCategory[category] = [];
       for (const { month, year } of months) {
-        const revenue = await getRevenue(businessMetricsId, month, year, category);
-        revenues[category].push({ month, year, revenue });
+        const revenue = await getRevenueByCategory(businessMetricsId, month, year, category);
+        revenuesByCategory[category].push({ month, year, revenue });
       }
     }
+
+    return revenuesByCategory;
+  };
+
+  async function fetchRevenues(businessMetricsId) {
+    const months = getLastSixMonths();
+    const revenues = [];
+    for (const { month, year } of months) {
+        const revenue = await getRevenue(businessMetricsId, month, year);
+        revenues.push({ month, year, revenue });
+      }
 
     return revenues;
   };
 
   useEffect(() => {
-    fetchRevenues(businessMetricsId).then(revenues => {
-      const formattedData = [
-        {
-          id: "Giày dép",
-          color: tokens("dark").greenAccent[500],
-          data: revenues.SHOE.map(item => ({ x: "Tháng " + item.month, y: item.revenue })),
-        },
-        {
-          id: "Quần áo",
-          color: tokens("dark").blueAccent[300],
-          data: revenues.CLOTHES.map(item => ({ x: "Tháng " + item.month, y: item.revenue })),
-        },
-        {
-          id: "Túi xách",
-          color: tokens("dark").redAccent[200],
-          data: revenues.HANDBAG.map(item => ({ x: "Tháng " + item.month, y: item.revenue })),
-        },
-        {
-          id: "Phụ kiện",
-          color: tokens("dark").redAccent[500],
-          data: revenues.ACCESSORY.map(item => ({ x: "Tháng " + item.month, y: item.revenue })),
-        },
-      ];
-      console.log('Formatted Data for LineChart:', formattedData);
-      setLineData(formattedData);
+    fetchRevenuesByCategory(businessMetricsId).then(revenuesByCategory => {
+      setTimeout(() => {
+        const formattedDataByCategory = [
+          {
+            id: "Giày dép",
+            color: tokens("dark").greenAccent[500],
+            data: revenuesByCategory.SHOE.map(item => ({ x: "Tháng " + item.month, y: item.revenue })),
+          },
+          {
+            id: "Quần áo",
+            color: tokens("dark").blueAccent[300],
+            data: revenuesByCategory.CLOTHES.map(item => ({ x: "Tháng " + item.month, y: item.revenue })),
+          },
+          {
+            id: "Túi xách",
+            color: tokens("dark").redAccent[200],
+            data: revenuesByCategory.HANDBAG.map(item => ({ x: "Tháng " + item.month, y: item.revenue })),
+          },
+          {
+            id: "Phụ kiện",
+            color: tokens("dark").redAccent[500],
+            data: revenuesByCategory.ACCESSORY.map(item => ({ x: "Tháng " + item.month, y: item.revenue })),
+          },
+        ];
+        if (dataType === "monthAndCategory") {
+          setLineData(formattedDataByCategory);
+        }
+      })
+      
     });
+
+    fetchRevenues(businessMetricsId).then(revenues => {
+      setTimeout(() => {
+        const formatData1 = [
+          {
+            id: "Doanh thu",
+            color: tokens("dark").redAccent[500],
+            data: revenues.map(item => ({ x: "Tháng " + item.month, y: item.revenue })),
+          },
+        ];
+        if (dataType === "month") {
+          setLineData(formatData1);
+        }
+      });
+   
+      
+    });
+
   }, []);
 
   const formatCurrency = (value) => {
@@ -106,7 +151,7 @@ const LineChart = ({ isCustomLineColors = false, isDashboard = false }) => {
             },
             text: {
               fill: colors.grey[100],
-              tickPadding: 15 // Adding padding to avoid cutting off the labels
+              tickPadding: 15
             },
           },
         },
@@ -126,12 +171,12 @@ const LineChart = ({ isCustomLineColors = false, isDashboard = false }) => {
       xScale={{ type: "point" }}
       yScale={{
         type: "linear",
-        min: 0, // Setting minimum to 0
-        max: "auto", // Let Nivo calculate the max value based on your data
-        stacked: false, // Ensure it is not stacked to avoid cumulative effect
+        min: 0,
+        max: "auto",
+        stacked: false,
         reverse: false,
       }}
-      yFormat={formatCurrency} // Use formatCurrency function
+      yFormat={formatCurrency}
       curve="catmullRom"
       axisTop={null}
       axisRight={null}
@@ -140,19 +185,19 @@ const LineChart = ({ isCustomLineColors = false, isDashboard = false }) => {
         tickSize: 0,
         tickPadding: 5,
         tickRotation: 0,
-        legend: isDashboard ? undefined : "Tháng", // added
+        legend: isDashboard ? undefined : "Tháng",
         legendOffset: 36,
         legendPosition: "middle",
       }}
       axisLeft={{
         orient: "left",
         tickSize: 5,
-        tickPadding: 15, // Adding padding to avoid cutting off the labels
+        tickPadding: 15,
         tickRotation: 0,
-        legend: isDashboard ? undefined : "Doanh thu", // added
-        legendOffset: -60, // Move legend to the right
+        legend: isDashboard ? undefined : "Doanh thu",
+        legendOffset: -60,
         legendPosition: "middle",
-        format: formatCurrency // Format y-axis ticks using formatCurrency
+        format: formatCurrency
       }}
       enableGridX={false}
       enableGridY={false}

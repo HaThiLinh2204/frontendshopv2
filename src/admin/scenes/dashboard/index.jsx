@@ -31,6 +31,7 @@ const Dashboard = () => {
   const [statisticsByHandBags, setStatisticsByHandBags] = useState([]);
   const [data, setData] = useState([]);
   const [topSoldProducts, setTopSoldProducts] = useState([]);
+  const [revenueByDay, setRevenueByDay] = useState(0.0); 
   const formatCurrency = (value) => {
     return value.toLocaleString('vi-VN', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
   };
@@ -61,6 +62,28 @@ const Dashboard = () => {
   }, []);
 
   useEffect(() => {
+    const getTodaysRevenueAsync = async () => {
+      const today = new Date();
+      const formattedDate = today.toISOString().slice(0, 10);
+
+      try {
+        const response = await fetch(`http://localhost:8004/business-metrics/1/revenue/day?date=${formattedDate}`);
+        if (!response.ok) {
+          throw new Error(`Lỗi khi lấy doanh thu: ${response.statusText}`);
+        }
+
+        const revenueData = await response.json();
+        setRevenueByDay(revenueData);
+        console.log('aaaaaa',formattedDate, revenueData);
+      } catch (error) {
+        console.error("Lỗi:", error);
+      }
+    };
+
+    getTodaysRevenueAsync();
+  }, []); 
+
+  useEffect(() => {
     const fetchDataByCategory = async (category) => {
       try {
         const [
@@ -72,20 +95,28 @@ const Dashboard = () => {
             axios.get(`http://localhost:8004/product/${category}/totalSold`)
           ]);
           if (category === 'shoe') {
-            setStatisticsByShoes([totalProductsResponse.data, totalQuantityResponse.data, totalSoldQuanlityResponse.data]);
-            // console.log('Shoes', statisticsByShoes);
+            setStatisticsByShoes([
+              totalProductsResponse.data,
+              totalQuantityResponse.data,
+              totalSoldQuanlityResponse.data,
+            ]);
           }
           else if (category === 'handbag') {
-            setStatisticsByHandBags([totalProductsResponse.data, totalQuantityResponse.data, totalSoldQuanlityResponse.data]);
-            // console.log('HandBags', statisticsByHandBags);
+            setStatisticsByHandBags([
+              totalProductsResponse.data,
+              totalQuantityResponse.data,
+              totalSoldQuanlityResponse.data,
+            ]);
           }
           else if (category === 'accessory') {
-            setStatisticsByAccessory([totalProductsResponse.data, totalQuantityResponse.data, totalSoldQuanlityResponse.data]);
-            // console.log('Accessory', statisticsByAccessory);
+            setStatisticsByAccessory([
+              totalProductsResponse.data,
+              totalQuantityResponse.data,
+              totalSoldQuanlityResponse.data,
+            ]);
           }
           else {
             setStatisticsByClothes([totalProductsResponse.data, totalQuantityResponse.data, totalSoldQuanlityResponse.data]);
-            // console.log('Clothes', statisticsByClothes);
           }
       } catch (error) {
         console.error("Error fetching data", error);
@@ -113,7 +144,6 @@ const Dashboard = () => {
         setAllRemainQuantity(allRemainQuantityResponse.data);
         setAllPrincipalAmount(allPrincipalAmountResponse.data);
         setAllMoneySold(allMoneySoldResponse.data);
-        console.log('22222',allMoneySold);
       }catch (error) {
         console.error("Error fetching data", error);
       }
@@ -293,7 +323,7 @@ const Dashboard = () => {
                 fontWeight="600"
                 color={colors.grey[100]}
               >
-                THỐNG KÊ DOANH THU 6 THÁNG GẦN ĐÂY NHẤT
+                Thống kê doanh thu 6 tháng gần đây nhất theo danh mục
               </Typography>
               <Typography
                 variant="h4"
@@ -303,16 +333,9 @@ const Dashboard = () => {
                 {formatCurrency(allMoneySold)} Đ
               </Typography>
             </Box>
-            <Box>
-              <IconButton>
-                <DownloadOutlinedIcon
-                  sx={{ fontSize: "26px", color: colors.greenAccent[500] }}
-                />
-              </IconButton>
-            </Box>
           </Box>
           <Box height="250px" m="-20px 0 0 0">
-            <LineChart isDashboard={true} />
+            <LineChart isDashboard={true} dataType={"monthAndCategory"} />
           </Box>
         </Box>
        
@@ -352,6 +375,39 @@ const Dashboard = () => {
               sx={{ mt: "15px" }}
               >Phần trăm thu hồi vốn khoảng: {formatCurrency(allMoneySold/allPrincipalAmount*100)}%
             </Typography> 
+          </Box>
+        </Box>
+        <Box
+          gridColumn="span 8"
+          gridRow="span 2"
+          backgroundColor={colors.primary[400]}
+        >
+          <Box
+            mt="25px"
+            p="0 30px"
+            display="flex "
+            justifyContent="space-between"
+            alignItems="center"
+          >
+            <Box>
+              <Typography
+                variant="h5"
+                fontWeight="600"
+                color={colors.grey[100]}
+              >
+                Thống kê tổng doanh thu 6 tháng gần đây nhất
+              </Typography>
+              <Typography
+                variant="h4"
+                fontWeight="bold"
+                color={colors.greenAccent[500]}
+              >
+                {formatCurrency(allMoneySold)} Đ
+              </Typography>
+            </Box>
+          </Box>
+          <Box height="250px" m="-20px 0 0 0">
+            <LineChart isDashboard={true} dataType={"month"} />
           </Box>
         </Box>
         <Box
