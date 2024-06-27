@@ -31,7 +31,8 @@ const Dashboard = () => {
   const [statisticsByHandBags, setStatisticsByHandBags] = useState([]);
   const [data, setData] = useState([]);
   const [topSoldProducts, setTopSoldProducts] = useState([]);
-  const [revenueByDay, setRevenueByDay] = useState(0.0); 
+  const [revenueByDay, setRevenueByDay] = useState(0.0);
+  const [quantityOrder, setQuantityOrder] = useState(0);
   const formatCurrency = (value) => {
     return value.toLocaleString('vi-VN', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
   };
@@ -64,24 +65,43 @@ const Dashboard = () => {
   useEffect(() => {
     const getTodaysRevenueAsync = async () => {
       const today = new Date();
-      const formattedDate = today.toISOString().slice(0, 10);
-
+      // Chuyển đổi thành chuỗi ISO và lấy phần ngày
+      const formattedDate = today.toISOString().split('T')[0];
+  
       try {
         const response = await fetch(`http://localhost:8004/business-metrics/1/revenue/day?date=${formattedDate}`);
         if (!response.ok) {
           throw new Error(`Lỗi khi lấy doanh thu: ${response.statusText}`);
         }
-
+  
         const revenueData = await response.json();
         setRevenueByDay(revenueData);
-        console.log('aaaaaa',formattedDate, revenueData);
+        console.log('Ngày UTC:', formattedDate, 'Dữ liệu doanh thu:', revenueData);
       } catch (error) {
         console.error("Lỗi:", error);
       }
     };
-
+  
     getTodaysRevenueAsync();
-  }, []); 
+  }, []);
+  
+  useEffect(() => {
+    const fetchTotalOrderItems = async () => {
+      try {
+        const response = await fetch('http://localhost:8004/order/totalOrderItems');
+        if (response.ok) {
+          const data = await response.json();
+          setQuantityOrder(data);
+          console.log('aaaa', data);
+        } else {
+          console.error('Failed to fetch total order items');
+        }
+      } catch (error) {
+        console.error('Error fetching total order items:', error);
+      }
+  };
+  fetchTotalOrderItems();
+},[]);
 
   useEffect(() => {
     const fetchDataByCategory = async (category) => {
@@ -161,20 +181,6 @@ const Dashboard = () => {
     <Box m="20px">
       <Box display="flex" justifyContent="space-between" alignItems="center">
         <Header title="Trang chủ" subtitle="Chào mừng tới trang quản lý" />
-        <Box>
-          <Button
-            sx={{
-              backgroundColor: colors.blueAccent[700],
-              color: colors.grey[100],
-              fontSize: "14px",
-              fontWeight: "bold",
-              padding: "10px 20px",
-            }}
-          >
-            <DownloadOutlinedIcon sx={{ mr: "10px" }} />
-            Download Reports
-          </Button>
-        </Box>
       </Box>
 
       {/* GRID & CHARTS */}
@@ -209,7 +215,7 @@ const Dashboard = () => {
         > 
           <div style = {{fontSize: "20px"}}>Giày </div>
           <div style = {{fontSize: "20px"}}>{statisticsByShoes[0]}</div>
-          <div>{statisticsByShoes[1]} sản phẩm</div>
+          <div>{(statisticsByShoes[1] - statisticsByShoes[2])} sản phẩm</div>
         </Box>
         <Box
           gridColumn="span 2"
@@ -222,7 +228,7 @@ const Dashboard = () => {
         > 
           <div style = {{fontSize: "20px"}}>Quần áo </div>
           <div style = {{fontSize: "20px"}}>{statisticsByClothes[0]}</div>
-          <div>{statisticsByClothes[1]} sản phẩm</div>
+          <div>{(statisticsByClothes[1]-statisticsByClothes[2])} sản phẩm</div>
         </Box>
         <Box
           gridColumn="span 2"
@@ -235,7 +241,7 @@ const Dashboard = () => {
         > 
           <div style = {{fontSize: "20px"}}>Túi xách</div>
           <div style = {{fontSize: "20px"}}>{statisticsByHandBags[0]}</div>
-          <div>{statisticsByHandBags[1]} sản phẩm</div>
+          <div>{(statisticsByHandBags[1] - statisticsByHandBags[2])} sản phẩm</div>
         </Box>
         <Box
           gridColumn="span 2"
@@ -248,7 +254,7 @@ const Dashboard = () => {
         > 
           <div style = {{fontSize: "20px"}}>Phụ kiện </div>
           <div style = {{fontSize: "20px"}}>{statisticsByAccessory[0]}</div>
-          <div>{statisticsByAccessory[1]} sản phẩm</div>
+          <div>{(statisticsByAccessory[1]-statisticsByAccessory[2])} sản phẩm</div>
           
         </Box>
         {/* ROW 2 */}
@@ -325,13 +331,6 @@ const Dashboard = () => {
               >
                 Thống kê doanh thu 6 tháng gần đây nhất theo danh mục
               </Typography>
-              <Typography
-                variant="h4"
-                fontWeight="bold"
-                color={colors.greenAccent[500]}
-              >
-                {formatCurrency(allMoneySold)} Đ
-              </Typography>
             </Box>
           </Box>
           <Box height="250px" m="-20px 0 0 0">
@@ -356,6 +355,13 @@ const Dashboard = () => {
             alignItems="center"
             mt="25px"
           >
+            <Typography
+              variant="h5"
+              color={colors.greenAccent[500]}
+              sx={{ mt: "15px" }}
+            >
+              Tổng đơn hàng thành công: {quantityOrder} đơn
+            </Typography>
             <Typography
               variant="h5"
               color={colors.greenAccent[500]}
@@ -408,22 +414,6 @@ const Dashboard = () => {
           </Box>
           <Box height="250px" m="-20px 0 0 0">
             <LineChart isDashboard={true} dataType={"month"} />
-          </Box>
-        </Box>
-        <Box
-          gridColumn="span 5"
-          gridRow="span 2"
-          backgroundColor={colors.primary[400]}
-        >
-          <Typography
-            variant="h5"
-            fontWeight="600"
-            sx={{ padding: "30px 30px 0 30px" }}
-          >
-            Sales Quantity
-          </Typography>
-          <Box height="250px" mt="-20px">
-            <BarChart isDashboard={true} />
           </Box>
         </Box>
       </Box>

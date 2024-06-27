@@ -25,8 +25,6 @@ function ReviewProduct() {
         const response = await axios.get(`http://localhost:8004/order/orderItem/${id}`);
         const imageResponse = await axios.get(`http://localhost:8004/product/image/${productId}?limit=1`);
         const imageUrl = imageResponse.data[0]?.imageUrl || "";
-        console.log('dataaaa', response.data);
-        console.log('idddd', productId);
         setProduct({ ...response.data, imageUrl });
       } catch (error) {
         console.error("Lỗi khi lấy thông tin sản phẩm:", error);
@@ -48,22 +46,6 @@ function ReviewProduct() {
     setReviewText(event.target.value);
   };
 
-  // const handleSubmit = async () => {
-  //   try {
-  //     await axios.post(`http://localhost:8004/reviews/products/${id}/${userId}`, {
-  //       rating,
-  //       comment: reviewText
-  //     }, {
-  //       params: {
-  //         rating,
-  //         comment: reviewText
-  //       }
-  //     });
-  //     navigate('/user/order');
-  //   } catch (error) {
-  //     console.error("Lỗi khi gửi đánh giá:", error);
-  //   }
-  // };
   const handleSubmit = async () => {
     try {
       const response = await axios.post(
@@ -79,8 +61,6 @@ function ReviewProduct() {
           }
         }
       );
-      // Assuming response.data contains the newly created review object if successful
-      console.log("Review created:", response.data);
       navigate('/user/order');
     } catch (error) {
       console.error("Lỗi khi gửi đánh giá:", error);

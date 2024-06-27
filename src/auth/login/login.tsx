@@ -11,11 +11,12 @@ function Login({isLoggedIn, role, setIsLoggedIn, setRole}) {
   const handleLogin = () => {
     authService.login(email, password, (error, data) => {
       if (error) {
-        setIsLoggedIn(localStorage.getItem('isLogin'));
-        setRole(localStorage.getItem('role'));
-        console.error('Đăng nhập thất bại:', error);
+        setIsLoggedIn(localStorage.getItem("isLogin"));
+        setRole(localStorage.getItem("role"));
+        console.error("Đăng nhập thất bại:", error);
       } else {
-        console.log('Đăng nhập thành công:', data);
+        alert("Đăng nhập thành công");
+        console.log("Đăng nhập thành công:", data);
       }
     });
   };
@@ -54,7 +55,13 @@ function Login({isLoggedIn, role, setIsLoggedIn, setRole}) {
         <button type="button" className="btn" onClick={handleLogin}>
           Đăng nhập
         </button>
-        <div> Chưa có tài khoản? <Link to="/register" className="user">Đăng ký</Link></div>
+        <div>
+          {" "}
+          Chưa có tài khoản?{" "}
+          <Link to="/register" className="user">
+            Đăng ký
+          </Link>
+        </div>
         <span className="footer"></span>
       </form>
     </div>

@@ -32,6 +32,7 @@ function ListOrder() {
         );
         setOrderItems(orderList.sort((a, b) => new Date(b.dateCreated) - new Date(a.dateCreated)));
       } catch (error) {
+        alert('Lỗi khi lấy danh sách sản phẩm trong giỏ hàng');
         console.error("Lỗi khi lấy danh sách sản phẩm trong giỏ hàng:", error);
       }
     };
@@ -49,7 +50,6 @@ function ListOrder() {
   const paginatedOrderItems = orderItems.slice(startIndex, endIndex);
 
   const handleReviewClick = (orderItemId, productId) => {
-    console.log('AAA', orderItemId,productId);
     navigate(`/user/review/${orderItemId}/${productId}`);
   };
 

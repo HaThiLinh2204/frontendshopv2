@@ -118,6 +118,7 @@ function ProductDetail() {
             if (element.sizeId === selectedSize) {
               localStorage.setItem("lastAddedCartItem", element.id);
             }
+            alert('Thêm sản phẩm vào giỏ hàng thành công');
           });
           updateCartItemCount();
         })
@@ -158,7 +159,6 @@ function ProductDetail() {
               precision={0.1}
               readOnly
             />
-            {/* <span>({products.reviewCount || 0} đánh giá)</span> */}
             <span style={{ marginLeft: "10px" }}>Đã bán: {quantitySold}</span>
           </div>
           <span
@@ -231,12 +231,9 @@ function ProductDetail() {
         </div>
         {reviews.length > 0 ? (
           reviews.map((review, index) => (
-            <div
-              key={review.id}
-              className="item-review"
-            >
-              <div style = {{ display: "flex", alignItems: "center"}}>
-               {index + 1}.
+            <div key={review.id} className="item-review">
+              <div style={{ display: "flex", alignItems: "center" }}>
+                {index + 1}.
                 <Rating value={review.rating} readOnly className="rating" />
               </div>
               <div className="comment">{review.comment}</div>

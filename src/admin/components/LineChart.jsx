@@ -15,14 +15,15 @@ const LineChart = ({ isCustomLineColors = false, isDashboard = false, dataType }
     const months = [];
     const today = new Date();
     for (let i = 0; i < 6; i++) {
-      const date = new Date(today.getFullYear(), today.getMonth() - i, 1);
-      months.push({
-        month: date.getMonth() + 1,
-        year: date.getFullYear()
-      });
+        const utcDate = new Date(Date.UTC(today.getUTCFullYear(), today.getUTCMonth() - i, 1));
+        months.push({
+            month: utcDate.getUTCMonth() + 1,
+            year: utcDate.getUTCFullYear()
+        });
     }
     return months.reverse();
-  };
+}
+
 
   async function getRevenueByCategory(businessMetricsId, month, year, category) {
     try {

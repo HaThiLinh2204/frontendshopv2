@@ -5,8 +5,7 @@ import { Link } from "react-router-dom";
 import { Box, IconButton } from "@mui/material";
 import InputBase from "@mui/material/InputBase";
 import SearchIcon from "@mui/icons-material/Search";
-
-import { removeDiacritics } from "D:/gr2/frontend2/frontendshopv2/src/user/service/utils/utils.js";
+import { removeDiacritics } from "../../../service/utils/utils.js";
 
 function AccessoryList() {
 
@@ -18,7 +17,6 @@ function AccessoryList() {
       return value.toLocaleString('vi-VN', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
     };
     useEffect(() => {
-        console.log('kkkkkk');
       const fetchProducts = async () => {
         try {
           const response = await axios.get("http://localhost:8004/products/accessory");
@@ -31,7 +29,6 @@ function AccessoryList() {
               return { ...accessory, imageUrl };
             })
           );
-          console.log('wwwww', processedProducts);
           setProducts(processedProducts);
         } catch (error) {
           console.error("Error fetching products:", error);
@@ -84,28 +81,19 @@ function AccessoryList() {
     });
 
     return (
-        <div className = "accessory-list">
-             <div className="navbar-filter">
+      <div className="accessory-list">
+        <div className="navbar-filter">
+          <div className="filter">
             <div className="navbar-filter-item1">
-              {/* <button type="submit" className="button-search">
-                Search
-              </button> */}
-
-              <Box
-                display="flex"
-                backgroundColor="#F0F0F0"
-                borderRadius="3px"
-              >
-                <button type="submit" sx={{ p: 1 }} className = "button-search">
-                  <SearchIcon />
-                </button>
-                <InputBase 
-                  className="search-box"
-                  sx={{ ml: 2, flex: 1 }}
-                  value={searchKeyword}
-                  onChange={handleSearchChange}
-                  placeholder="Tìm kiếm giày.." />
-              </Box>
+              <button type="submit" className="button-search">
+                <SearchIcon />
+              </button>
+              <InputBase
+                className="search-box"
+                value={searchKeyword}
+                onChange={handleSearchChange}
+                placeholder="Nhập từ khóa để tìm kiếm"
+              />
             </div>
             <div className="navbar-filter-item2">
               <label style={{ fontSize: "20px", fontWeight: "bold" }}>
@@ -114,14 +102,14 @@ function AccessoryList() {
               </label>
               <input
                 type="number"
-                placeholder="đ TỪ"
+                placeholder="Từ"
                 value={minPrice}
                 onChange={handleMinPriceChange}
               />
               -
               <input
                 type="number"
-                placeholder="đ ĐẾN"
+                placeholder="Đến"
                 value={maxPrice}
                 onChange={handleMaxPriceChange}
               />
@@ -130,26 +118,29 @@ function AccessoryList() {
           <div className="result-count" style={{ textAlign: "right" }}>
             {filteredproducts.length} kết quả được tìm thấy
           </div>
-
-          <div className="container-page">
-            {filteredproducts.map((accessory) => (
-              <div className="container-item" key={accessory.product_id}>
-                <Link to={`/user/products/${accessory.product_id}`}>
-                  <div className="item-img">
-                    <img
-                      src={accessory.imageUrl}
-                      alt={`Ảnh của giày ${accessory.name}`}
-                    />
-                  </div>
-                  <div className="item-information">
-                    <div className="item-name">{accessory.name}</div>
-                    <div className="item-price">{formatCurrency(accessory.saleprice)}đ</div>
-                  </div>
-                </Link>
-              </div>
-            ))}
-          </div>
         </div>
-    )
+
+        <div className="container-page">
+          {filteredproducts.map((accessory) => (
+            <div className="container-item" key={accessory.product_id}>
+              <Link to={`/user/products/${accessory.product_id}`}>
+                <div className="item-img">
+                  <img
+                    src={accessory.imageUrl}
+                    alt={`Ảnh của giày ${accessory.name}`}
+                  />
+                </div>
+                <div className="item-information">
+                  <div className="item-name">{accessory.name}</div>
+                  <div className="item-price">
+                    {formatCurrency(accessory.saleprice)}đ
+                  </div>
+                </div>
+              </Link>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
 }
 export default AccessoryList;

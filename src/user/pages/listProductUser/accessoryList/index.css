@@ -1,5 +1,52 @@
 .accessory-list {
   padding: 200px 30px 10px 30px;
+  .navbar-filter {
+    position: fixed;
+    top: 120px;
+    width: calc(100% - 60px );
+    background-color: white;
+    z-index: 1000;
+    padding: 10px;
+    .filter {
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .navbar-filter-item1 {
+      display: flex;
+      align-items: center;
+      justify-content: start;
+      height: 35px;
+      background-origin: padding-box;
+      border: #000 solid 1px;
+      border-radius: 10px;
+      width: 400px;
+      background-color: #fff;
+      margin-right: 100px;
+
+      .button-search {
+        border: none;
+        background-color: transparent;
+      }
+
+      .search-box {
+        background-color: transparent;
+      }
+    }
+    .navbar-filter-item2 {
+      height: 35px;
+      input {
+        height: 25px;
+        border-radius: 10px;
+        margin-right: 5px;
+        margin-left: 5px;
+        border: #000 solid 1px;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+      }
+    }
+  }
 
   .title-page h2 {
     font-size: 20px;

@@ -66,9 +66,10 @@ const Clothes = () => {
           const updatedClothes = clothes.filter(item => item.id !== deleteItemId);
           setClothes(updatedClothes);
           setDeleteDialogOpen(false);
+          alert('Xóa thành công!!');
         })
         .catch((error) => {
-          console.error("Error deleting item:", error);
+          console.error("Lỗi:", error);
         });
     }
   };
@@ -152,16 +153,16 @@ const Clothes = () => {
       </Box>
       <Dialog open={deleteDialogOpen} onClose={handleDeleteCancel} >
         <div style={{backgroundColor: '#FAF0F1', color:'#000000'}}>
-          <h3 style={{marginLeft: '16px'}}>Confirm delete product</h3>
+          <h3 style={{marginLeft: '16px'}}>Xác nhận xóa</h3>
           <DialogContent>
-            Are you sure you want to delete this product?
+            Bạn có chắc chắn muốn xóa sản phẩm này không ?
           </DialogContent>
           <DialogActions>
             <Button onClick={handleDeleteConfirm} variant="contained" color="error">
-              Yes
+              Có
             </Button>
             <Button onClick={handleDeleteCancel} variant="outlined" color="primary">
-              No
+              Hủy
             </Button>
           </DialogActions>
         </div>

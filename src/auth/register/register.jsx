@@ -17,11 +17,11 @@ function Register(){
       }
       try {
         await authService.register(email, password);
-        alert('Registration successful');
+        alert('Đăng ký tài khoản thành công');
         navigate('/login');
       } catch (error) {
-        console.error('Registration error:', error);
-        alert('Registration failed');
+        console.error("Registration error:", error);
+        alert("Đăng ký tài khoản thất bại");
       }
     };
   

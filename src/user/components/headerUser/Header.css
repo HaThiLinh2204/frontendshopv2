@@ -9,18 +9,20 @@
   z-index: 99999;
   background-color: #fff;
 }
-  
+
 .header-page .rightbar {
   position: absolute;
   display: flex;
   right: 8px;
   padding: 10px;
   align-items: center;
+
   .cart {
     display: flex;
     align-items: center;
     color: #000000;
   }
+
   a {
     font-size: 17px;
     text-decoration: none;
@@ -29,7 +31,7 @@
     margin-right: 10px;
   }
 }
-  
+
 .header-page .rightbar .user {
   text-align: center;
   padding: 14px 10px;
@@ -40,62 +42,61 @@
   height: 20px;
   width: 20px;
 }
-  
-  .header-page .rightbar i p {
-    padding: 0px 5px;
-    margin: 0;
-  }
-  
-  .header-page .header-title {
-    width: 15%;
-    padding: 20px;
-    color: #000000;
-  }
-  
-  .header-page .title-page {
-    margin: 0;
-    font-size: 55px;
-    color: #252a2b;
-    text-decoration: none;
-  }
-  
-  .header-page .tabbar {
-    display: flex;
-    justify-content: space-around;
-    align-items: center;
-    padding: 10px;
-  }
-  
-  .header-page .tabbar .menu-tab {
-    display: flex;
-    justify-content: space-around;
-  }
-  
-  .header-page .tabbar .menu-tab .menu-tab-item {
-    margin: auto 15px;
-    color: #000000;
-    padding: 10px;
-  }
 
-  .header-page .tabbar .menu-tab .menu-tab-item:hover {
-    border-bottom: 2px solid black;
-  }
+.header-page .rightbar i p {
+  padding: 0px 5px;
+  margin: 0;
+}
 
-  .header-page .tabbar .menu-tab .active {
-    border-bottom: 2px solid black;
-  }
+.header-page .header-title {
+  width: 15%;
+  padding: 20px;
+  color: #000000;
+}
 
-  .header-page .menu-tab-item a {
-    color: #252a2b;
-    position: relative;
-    text-transform: uppercase;
-    font-weight: 400;
-    text-decoration: none;
-    white-space: nowrap;
-    font-size: 18px;
-  }
-  
-  .header-page .menu-tab-item a:hover {
-    font-weight: 410;
-  }
-  
+.header-page .title-page {
+  margin: 0;
+  font-size: 55px;
+  color: #252a2b;
+  text-decoration: none;
+}
+
+.header-page .tabbar {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  padding: 10px;
+}
+
+.header-page .tabbar .menu-tab {
+  display: flex;
+  justify-content: space-around;
+}
+
+.header-page .tabbar .menu-tab .menu-tab-item {
+  margin: auto 15px;
+  color: #000000;
+  padding: 10px;
+}
+
+.header-page .tabbar .menu-tab .menu-tab-item:hover {
+  border-bottom: 2px solid black;
+}
+
+.header-page .tabbar .menu-tab .active {
+  border-bottom: 2px solid black;
+}
+
+.header-page .menu-tab-item a {
+  color: #252a2b;
+  position: relative;
+  text-transform: uppercase;
+  font-weight: 400;
+  text-decoration: none;
+  white-space: nowrap;
+  font-size: 18px;
+}
+
+.header-page .menu-tab-item a:hover {
+  font-weight: 410;
+}

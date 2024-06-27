@@ -5,9 +5,8 @@ import { Link } from "react-router-dom";
 import { Box, IconButton } from "@mui/material";
 import InputBase from "@mui/material/InputBase";
 import SearchIcon from "@mui/icons-material/Search";
+import {removeDiacritics} from "../../../service/utils/utils.js";
 
-
-import { removeDiacritics } from "D:/gr2/frontend2/frontendshopv2/src/user/service/utils/utils.js";
 function ClothesList() {
   const [products, setProducts] = useState([]);
   const [searchKeyword, setSearchKeyword] = useState("");
@@ -82,41 +81,42 @@ function ClothesList() {
     <>
       <div className="page-clothes">
         <div className="container-main">
-          <div className="navbar-filter">
-            <div className="navbar-filter-item1">
-              <input
-                type="text"
-                placeholder="Tìm kiếm giày..."
-                value={searchKeyword}
-                onChange={handleSearchChange}
-                className="search-box"
-              />
-              <button type="submit" className="button-search">
-                Search
-              </button>
+        <div className="navbar-filter">
+            <div className="filter">
+              <div className="navbar-filter-item1">
+                <button type="submit" className="button-search">
+                  <SearchIcon />
+                </button>
+                <InputBase
+                  className="search-box"
+                  value={searchKeyword}
+                  onChange={handleSearchChange}
+                  placeholder="Nhập từ khóa để tìm kiếm"
+                />
+              </div>
+              <div className="navbar-filter-item2">
+                <label style={{ fontSize: "20px", fontWeight: "bold" }}>
+                  {" "}
+                  Khoảng giá:
+                </label>
+                <input
+                  type="number"
+                  placeholder="Từ"
+                  value={minPrice}
+                  onChange={handleMinPriceChange}
+                />
+                -
+                <input
+                  type="number"
+                  placeholder="Đến"
+                  value={maxPrice}
+                  onChange={handleMaxPriceChange}
+                />
+              </div>
             </div>
-            <div className="navbar-filter-item2">
-              <label style={{ fontSize: "20px", fontWeight: "bold" }}>
-                {" "}
-                Khoảng giá:
-              </label>
-              <input
-                type="number"
-                placeholder="đ TỪ"
-                value={minPrice}
-                onChange={handleMinPriceChange}
-              />
-              -
-              <input
-                type="number"
-                placeholder="đ ĐẾN"
-                value={maxPrice}
-                onChange={handleMaxPriceChange}
-              />
+            <div className="result-count" style={{ textAlign: "right" }}>
+              {filteredproducts.length} kết quả được tìm thấy
             </div>
-          </div>
-          <div className="result-count" style={{ textAlign: "right" }}>
-            {filteredproducts.length} kết quả được tìm thấy
           </div>
           <div className="container-page">
             {filteredproducts.map((accessory) => (

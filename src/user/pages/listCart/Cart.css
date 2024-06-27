@@ -1,17 +1,19 @@
 .cart-page {
     padding: 120px 30px 50px 30px;
+
     .cart-container {
         input {
             width: 25px;
             height: 25px;
         }
+
         .cart-items {
             .cart-item {
                 img {
                     width: 110px;
                     border-radius: 10px;
                 }
-               
+
             }
         }
     }

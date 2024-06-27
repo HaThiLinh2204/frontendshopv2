@@ -5,8 +5,8 @@ import { Link } from "react-router-dom";
 import { Box, IconButton } from "@mui/material";
 import InputBase from "@mui/material/InputBase";
 import SearchIcon from "@mui/icons-material/Search";
+import {removeDiacritics} from "../../../service/utils/utils.js";
 
-import { removeDiacritics } from "D:/gr2/frontend2/frontendshopv2/src/user/service/utils/utils.js";
 function ShoeList() {
   const [products, setProducts] = useState([]);
   const [searchKeyword, setSearchKeyword] = useState("");
@@ -82,50 +82,43 @@ function ShoeList() {
       <div className="shoe-list">
         <div className="container-main">
           <div className="navbar-filter">
-            <div className="navbar-filter-item1">
-              {/* <button type="submit" className="button-search">
-                Search
-              </button> */}
-
-              <Box
-                display="flex"
-                backgroundColor="#F0F0F0"
-                borderRadius="3px"
-              >
-                <button type="submit" sx={{ p: 1 }} className = "button-search">
+            <div className="filter">
+              <div className="navbar-filter-item1">
+                <button type="submit" className="button-search">
                   <SearchIcon />
                 </button>
-                <InputBase 
+                <InputBase
                   className="search-box"
-                  sx={{ ml: 2, flex: 1 }}
                   value={searchKeyword}
                   onChange={handleSearchChange}
-                  placeholder="Tìm kiếm giày.." />
-              </Box>
+                  placeholder="Nhập từ khóa để tìm kiếm"
+                />
+              </div>
+              <div className="navbar-filter-item2">
+                <label style={{ fontSize: "20px", fontWeight: "bold" }}>
+                  {" "}
+                  Khoảng giá:
+                </label>
+                <input
+                  type="number"
+                  placeholder="Từ"
+                  value={minPrice}
+                  onChange={handleMinPriceChange}
+                />
+                -
+                <input
+                  type="number"
+                  placeholder="Đến"
+                  value={maxPrice}
+                  onChange={handleMaxPriceChange}
+                />
+              </div>
             </div>
-            <div className="navbar-filter-item2">
-              <label style={{ fontSize: "20px", fontWeight: "bold" }}>
-                {" "}
-                Khoảng giá:
-              </label>
-              <input
-                type="number"
-                placeholder="đ TỪ"
-                value={minPrice}
-                onChange={handleMinPriceChange}
-              />
-              -
-              <input
-                type="number"
-                placeholder="đ ĐẾN"
-                value={maxPrice}
-                onChange={handleMaxPriceChange}
-              />
+            <div className="result-count" style={{ textAlign: "right" }}>
+              {filteredproducts.length} kết quả được tìm thấy
             </div>
           </div>
-          <div className="result-count" style={{ textAlign: "right" }}>
-            {filteredproducts.length} kết quả được tìm thấy
-          </div>
+
           <div className="container-page">
             {filteredproducts.map((shoe) => (
               <div className="container-item" key={shoe.product_id}>
@@ -138,10 +131,9 @@ function ShoeList() {
                   </div>
                   <div className="item-information">
                     <div className="item-name">{shoe.name}</div>
-                    <div className="item-price">{formatCurrency(shoe.saleprice)}đ</div>
-                    {/* <button class="buy-item-button">
-                      <span class="item-button">Mua hàng</span>
-                    </button> */}
+                    <div className="item-price">
+                      {formatCurrency(shoe.saleprice)}đ
+                    </div>
                   </div>
                 </Link>
               </div>

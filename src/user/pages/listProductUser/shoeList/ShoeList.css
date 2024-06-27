@@ -1,121 +1,91 @@
 .shoe-list {
-  padding: 200px 30px 10px 30px;
-  /* font-family: "Raleway", sans-serif; */
-  /* font-weight: 350; */
+  padding: 150px 30px 10px 30px;
+  position: relative;
+
+  .navbar-filter {
+    position: fixed;
+    top: 120px;
+    width: calc(100% - 60px);
+    background-color: white;
+    z-index: 1000;
+    padding: 10px;
+
+    .filter {
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .navbar-filter-item1 {
+      display: flex;
+      align-items: center;
+      justify-content: start;
+      height: 35px;
+      background-origin: padding-box;
+      border: #000 solid 1px;
+      border-radius: 10px;
+      width: 400px;
+      background-color: #fff;
+      margin-right: 100px;
+
+      .button-search {
+        border: none;
+        background-color: transparent;
+      }
+
+      .search-box {
+        background-color: transparent;
+      }
+    }
+
+    .navbar-filter-item2 {
+      height: 35px;
+
+      input {
+        height: 25px;
+        border-radius: 10px;
+        margin-right: 5px;
+        margin-left: 5px;
+        border: #000 solid 1px;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+      }
+    }
+  }
 }
+
+
 .shoe-list .title-page h2 {
   font-size: 20px;
   font-weight: 600 !important;
 }
+
 .shoe-list a {
   text-decoration: none;
   color: #000000;
 }
 
-.shoe-list .container-main .navbar-filter {
-  display: flex;
-  margin: 0px 10px 10px 20px;
-  justify-content: space-between;
-  padding: 10px 10px 10px 10px;
-  border-radius: 10px;
-}
-.shoe-list .container-main .navbar-filter-item1 {
-  width: fit-content;
-  height: fit-content;
-  position: relative;
-}
-.shoe-list .container-main .navbar-filter-item2 {
-  display: flex;
-  margin-left: 20px;
-  margin-right: 30px;
-  align-items: center;
-  justify-content: center;
-}
-.shoe-list .container-main .navbar-filter-item2 input {
-  width: 150px;
-  height: 20px;
-  padding: 5px 5px;
-  float: left;
-  border-radius: 3px;
-  background: #eee;
-  border-radius: 1px 0 0 1px;
-  border: none;
-  margin-left: 10px;
-  margin-right: 10px;
-}
-
-.shoe-list .navbar-filter-item1 .search-box {
-  height: 50px;
-  width: 50px;
-  border-style: none;
-  padding: 10px;
-  font-size: 18px;
-  letter-spacing: 2px;
-  outline: none;
-  border-radius: 25px;
-  transition: all .5s ease-in-out;
-  background-color: #22a6b3;
-  padding-right: 40px;
-  color:#fff;
-}
-
-.shoe-list .navbar-filter-item1 .search-box::placeholder {
-  color:rgba(255,255,255,.5);
-  font-size: 18px;
-  letter-spacing: 2px;
-  font-weight: 100;
-}
-
-.shoe-list .navbar-filter-item1 .button-search {
-  width: 50px;
-  height: 50px;
-  border-style: none;
-  font-size: 20px;
-  font-weight: bold;
-  outline: none;
-  cursor: pointer;
-  border-radius: 50%;
-  position: absolute;
-  right: 0px;
-  color:#ffffff ;
-  background-color:transparent;
-  pointer-events: painted;  
-}
-
-.shoe-list .navbar-filter-item1 .button-search:focus~ .search-box {
-  width: 300px;
-  border-radius: 0px;
-  background-color: transparent;
-  border-bottom:1px solid rgba(255,255,255,.5);
-  transition: all 500ms cubic-bezier(0, 0.110, 0.35, 2);
-}
-
-.shoe-list .search-box:focus {
-  width: 300px;
-  border-radius: 0px;
-  background-color: #F0F0F0;
-  border-bottom:1px solid rgba(140, 39, 39, 0.5);
-  transition: all 500ms cubic-bezier(0, 0.110, 0.35, 2);
-}
 
 .shoe-list .container-page {
   margin-left: 20px;
-  margin-top: 20px;
+  margin-top: 60px;
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
   gap: 2rem;
   width: 100%;
-  
+
 }
-.shoe-list .container-item { 
+
+.shoe-list .container-item {
   width: 200px;
   margin: 20px 10px;
-  background:#fff;
-  padding:15px;
-  border-radius:6px;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
-  position:relative;
+  background: #fff;
+  padding: 15px;
+  border-radius: 6px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
+  position: relative;
 }
+
 .shoe-list .container-item:hover .item-img {
   top: -20px;
 }
@@ -159,6 +129,7 @@
   width: 100%;
   /* font-weight: 550; */
 }
+
 .shoe-list .container-item .item-price {
   margin-top: 10px;
   font-size: 20px;
@@ -181,6 +152,7 @@
   background-color: #ffffff;
   border: 1px solid rgba(0, 0, 0, 0.6);
 }
+
 .shoe-list .container-item .buy-item-button .item-button {
   color: #000000;
   font-size: 12px;
@@ -201,15 +173,19 @@
   0% {
     transform: rotate(0deg) translate3d(0, 0, 0);
   }
+
   25% {
     transform: rotate(3deg) translate3d(0, 0, 0);
   }
+
   50% {
     transform: rotate(-3deg) translate3d(0, 0, 0);
   }
+
   75% {
     transform: rotate(1deg) translate3d(0, 0, 0);
   }
+
   100% {
     transform: rotate(0deg) translate3d(0, 0, 0);
   }
@@ -219,15 +195,19 @@
   0% {
     transform: translate3d(0, 0, 0) translateZ(0);
   }
+
   25% {
     transform: translate3d(4px, 0, 0) translateZ(0);
   }
+
   50% {
     transform: translate3d(-3px, 0, 0) translateZ(0);
   }
+
   75% {
     transform: translate3d(2px, 0, 0) translateZ(0);
   }
+
   100% {
     transform: translate3d(0, 0, 0) translateZ(0);
   }

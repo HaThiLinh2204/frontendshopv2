@@ -42,7 +42,6 @@ function Cart() {
             const imageResponse = await axios.get(
               `http://localhost:8004/product/image/${product.productId}?limit=1`
             );
-            console.log('PRODUCT', product);
             const imageUrl = imageResponse.data[0]?.imageUrl || "";
             return { ...product, imageUrl };
           })
@@ -50,9 +49,7 @@ function Cart() {
         if (lastAddedCartItem) {
           processedProducts.forEach((cartItem, index) => {
             if(cartItem.id === lastAddedCartItem) {
-              console.log('selectedLastItem', lastAddedCartItem, index);
               processedProducts[index].selected = true;
-              console.log('ddddddđ',processedProducts);
               checkSelectAll(processedProducts);
               localStorage.removeItem('lastAddedCartItem');
             }
@@ -60,6 +57,7 @@ function Cart() {
         }
         setCartItems(processedProducts);
       } catch (error) {
+        alert("Lỗi khi lấy danh sách sản phẩm trong giỏ hàng:", error);
         console.error("Lỗi khi lấy danh sách sản phẩm trong giỏ hàng:", error);
       }
     };
@@ -88,29 +86,27 @@ function Cart() {
     const userId = parseInt(localStorage.getItem("user_id"));
     axios.delete(`http://localhost:8004/cart/${userId}/remove?cartItemId=${cartItems[index].id}`)
       .then((response) => {
-      console.log('Đã xóa sản phẩm khỏi giỏ hàng:', response.data);
+        alert("Đã xóa sản phẩm khỏi giỏ hàng");
         updateCartItemCount();
         const newCartItems = [...cartItems];
         newCartItems.splice(index, 1);
         setCartItems(newCartItems);
       })
       .catch((error) => {
-      console.error('Lỗi khi xóa sản phẩm khỏi giỏ hàng:', error);
+        alert("Lỗi khi xóa sản phẩm khỏi giỏ hàng:", error);
+        console.error('Lỗi khi xóa sản phẩm khỏi giỏ hàng:', error);
       });
   };
 
   const checkSelectAll = (carts) => {
     if (carts.length) {
-      console.log('11111');
       const indexes = carts.map((item, index) => {
         if (item.selected) {
           console.log('item', item);
           return index;
         }
       }).filter(index => index !== undefined);
-      console.log('indexsss', indexes);
       if (indexes.length === cartItemCount) {
-        console.log('aaaaind22984');
         setSelectAll(true);
       }
       else {
@@ -125,6 +121,7 @@ function Cart() {
       axios
         .delete(`http://localhost:8004/cart/${userId}/clear`)
         .then((response) => {
+        alert("Đã xóa sản phẩm khỏi giỏ hàng");
         console.log('Đã xóa sản phẩm khỏi giỏ hàng:', response.data);
           updateCartItemCount();
          const newCartItems = [];
@@ -142,12 +139,8 @@ function Cart() {
   };
 
   const handlePlaceOrder = () => {
-    console.log('đặt hàng');
     const userId = parseInt(localStorage.getItem("user_id"));
     const orderItems = cartItems.filter((item) => item.selected);
-    console.log('userId', userId, orderItems);
-  
-    // Chuẩn hóa các đối tượng orderItem
     const normalizedOrderItems = orderItems.map(item => ({
       id: item.id,
       productId: item.productId,
@@ -171,12 +164,13 @@ function Cart() {
     Promise.all(orderPromises)
       .then(responses => {
         console.log('Đặt hàng thành công:', responses);
-        console.log('cartItems', cartItems);
+        alert('Đặt hàng thành công');
         setCartItems(cartItems.filter(item => !item.selected));
         updateCartItemCount();
         navigate(`/user/order`);
       })
       .catch(error => {
+        alert('Lỗi đặt hàng:', error);
         console.error('Lỗi đặt hàng:', error);
       });
   };
