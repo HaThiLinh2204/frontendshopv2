@@ -13,6 +13,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { Formik } from "formik";
 import axios from "axios";
 import DeleteOutlineSharpIcon from "@mui/icons-material/DeleteOutlineSharp";
+import EditIcon from '@mui/icons-material/Edit';
 
 const Form = ({ mode }) => {
   const { id } = useParams();
@@ -51,7 +52,7 @@ const Form = ({ mode }) => {
           const sizesData = sizesResponse.data;
           setInitialValues(prevValues => ({
             ...prevValues,
-            sizes: sizesData.map(size => ({sizeId:size.sizeId, sizeName: size.sizeName, quantity: size.quantity }))
+            sizes: sizesData.map(size => ({sizeId:size.sizeId, sizeName: size.sizeName, quantity: size.quantity, remainQuantity: size.remainQuantity, quantitySold: size.quantitySold }))
           }));
           sessionStorage.setItem('listCurrentSizes', JSON.stringify(sizesData));
           const imageUrlsResponse = await axios.get(`http://localhost:8004/product/image/${productData.product_id}`);
@@ -60,6 +61,7 @@ const Form = ({ mode }) => {
             ...prevValues,
             imageUrls: imageUrlsData.map(image => ({imageId:image.imageId, imageUrl: image.imageUrl}))
           }));
+          console.log('SIIIZIID',productData);
           sessionStorage.setItem('listCurrentImages', JSON.stringify(imageUrlsData))
         })
         .catch(error => {
@@ -70,9 +72,15 @@ const Form = ({ mode }) => {
 
   const { v4: uuidv4 } = require("uuid");
 
-  const handleOpenModal = () => {
+  const handleOpenModal = (size) => {
+    setCurrentSize({
+      sizeId: size.sizeId,
+      sizeName: size.sizeName,
+      quantity: size.quantity,
+    });
     setOpenModal(true);
   };
+  
 
   const handleCloseModal = () => {
     setOpenModal(false);
@@ -87,6 +95,17 @@ const Form = ({ mode }) => {
     setValues(updatedValues);
     setCurrentSize({sizeId:"", sizeName: "", quantity: "" });
     handleCloseModal();
+  };
+
+  const handleEditSize = (values, setValues) => {
+    const updatedValues = { ...values };
+    const updatedSizes = updatedValues.sizes.map((size) =>
+      size.sizeId === currentSize.sizeId
+        ? { ...size, sizeName: currentSize.sizeName, quantity: currentSize.quantity }
+        : size
+    );
+    setValues({ ...updatedValues, sizes: updatedSizes });
+    setCurrentSize({ sizeId: "", sizeName: "", quantity: "" });
   };
   
 
@@ -263,14 +282,18 @@ const Form = ({ mode }) => {
   return (
     <Box m="20px">
       <Header
-        title={mode === 'edit' ? "CHỈNH SỬA SẢN PHẨM" : "THÊM SẢN PHẨM MỚI"}
-        subtitle={mode === 'edit' ? "Chỉnh sửa thông tin chi tiết của sản phẩm" : "Tạo sản phẩm mới"}
+        title={mode === "edit" ? "CHỈNH SỬA SẢN PHẨM" : "THÊM SẢN PHẨM MỚI"}
+        subtitle={
+          mode === "edit"
+            ? "Chỉnh sửa thông tin chi tiết của sản phẩm"
+            : "Tạo sản phẩm mới"
+        }
       />
       <Formik
-        onSubmit = { handleFormSubmit }
-        initialValues = { initialValues }
-        enableReinitialize = { true }
-      //  validationSchema={checkoutSchema}
+        onSubmit={handleFormSubmit}
+        initialValues={initialValues}
+        enableReinitialize={true}
+        //  validationSchema={checkoutSchema}
       >
         {({
           values,
@@ -282,7 +305,7 @@ const Form = ({ mode }) => {
           setValues,
           resetForm,
         }) => (
-        <form onSubmit={handleSubmit} >
+          <form onSubmit={handleSubmit}>
             <Box
               display="grid"
               gap="30px"
@@ -295,10 +318,10 @@ const Form = ({ mode }) => {
                 fullWidth
                 variant="filled"
                 type="text"
-                label = "Tên sản phẩm"
-                onBlur = {handleBlur}
-                onChange = {handleChange}
-                value = {values.product_name}
+                label="Tên sản phẩm"
+                onBlur={handleBlur}
+                onChange={handleChange}
+                value={values.product_name}
                 name="product_name"
                 sx={{ gridColumn: "span 2" }}
               />
@@ -355,103 +378,131 @@ const Form = ({ mode }) => {
                 onChange={handleChange}
                 value={values.description}
                 name="description"
-                sx={{ gridColumn: "span 2", marginBottom:'20px',  gridRow: "span 2" }}
+                sx={{
+                  gridColumn: "span 2",
+                  marginBottom: "20px",
+                  gridRow: "span 2",
+                }}
               />
             </Box>
-            
-            {Array.isArray(values.sizes) && values.sizes.map((size, index) => (
-              <Box
-              key={index}
-              display="grid"
-              gap="30px"
-              gridTemplateColumns="repeat(4, minmax(0, 1fr))"
-              sx={{
-                "& > div": { gridColumn: isNonMobile ? undefined : "span 4" },
-              }}
-            >
-              <React.Fragment key={index}>
 
-                <Typography
-                  variant="filled"
+            {Array.isArray(values.sizes) &&
+              values.sizes.map((size, index) => (
+                <Box
+                  key={index}
+                  display="grid"
+                  gap="30px"
+                  gridTemplateColumns="repeat(7, minmax(0, 1fr))"
                   sx={{
-                    gridColumn: "span 1",
-                  //  ml: "20px",
-                    fontSize: "15px",
+                    "& > div": {
+                      gridColumn: isNonMobile ? undefined : "span 5",
+                    },
                   }}
                 >
-                  Size {index + 1}:
-                </Typography>
-                <Typography
-                  variant="filled"
-                  sx={{ gridColumn: "span 1", fontSize: "15px" }}
-                >
-                  Tên size {size.sizeName}
-                </Typography>
-                <Typography
-                  variant="filled"
-                  sx={{ gridColumn: "span 1", fontSize: "15px" }}
-                >
-                  Số lượng: {size.quantity}
-                </Typography>
-                <Button
-                  type="button"
-                  color="secondary"
-                  variant="contained"
-                  sx={{ gridColumn: "span 1", maxWidth:'30%' }}
-                  onClick={() => handleRemoveSize(index, values, setValues)}
-                >
-                  <DeleteOutlineSharpIcon />
-                </Button>
-                
-              </React.Fragment>
+                  <React.Fragment key={index}>
+                    <Typography
+                      variant="filled"
+                      sx={{
+                        gridColumn: "span 1",
+                        //  ml: "20px",
+                        fontSize: "15px",
+                      }}
+                    >
+                      Size {index + 1}:
+                    </Typography>
+                    <Typography
+                      variant="filled"
+                      sx={{ gridColumn: "span 1", fontSize: "15px" }}
+                    >
+                      Tên size: {size.sizeName}
+                    </Typography>
+                    <Typography
+                      variant="filled"
+                      sx={{ gridColumn: "span 1", fontSize: "15px" }}
+                    >
+                      Số lượng: {size.quantity}
+                    </Typography>
+                    <Typography
+                      variant="filled"
+                      sx={{ gridColumn: "span 1", fontSize: "15px" }}
+                    >
+                      Còn lại: {size.remainQuantity}
+                    </Typography>
+                    <Typography
+                      variant="filled"
+                      sx={{ gridColumn: "span 1", fontSize: "15px" }}
+                    >
+                      Đã bán: {size.quantitySold}
+                    </Typography>
+                    <Button
+                      type="button"
+                      color="secondary"
+                      variant="contained"
+                      sx={{ gridColumn: "span 1", maxWidth: "30%" }}
+                      onClick={() => handleRemoveSize(index, values, setValues)}
+                    >
+                      <DeleteOutlineSharpIcon />
+                    </Button>
+                    <Button 
+  type="button"
+  color="secondary"
+  variant="contained"
+  sx={{ gridColumn: "span 1", maxWidth: "30%" }}
+  onClick={() => handleOpenModal(size)}
+>
+  <EditIcon />
+</Button>
 
-            </Box>
-              
-            ))}
-            {Array.isArray(values.imageUrls) && values.imageUrls.map((img, index) => (
-              <Box
-                key={index}
-                display="grid"
-                gap="30px"
-                gridTemplateColumns="repeat(4, minmax(0, 1fr))"
-                sx={{
-                  "& > div": { gridColumn: isNonMobile ? undefined : "span 4" },
-                }}
-              >
-                <img
-                  src={img.imageUrl}
-                  alt={`Image ${index + 1}`}
-                 // sx={{ gridColumn: "span 1" }}
-                  style={{
-                    maxWidth: "150px",
-                    maxHeight: "150px",
-                    marginTop: "20px",
-                    border: "1px solid #ffffff",
-                  }}
-                />
-                <Button
-                  type="button"
-                  color="secondary"
-                  variant="contained"
-                  style={{
-                    maxWidth: "10px",
-                    maxHeight: "20px",
-                    margin: 'auto',
-                    border: "1px solid #ffffff",
-                  }}
-                  onClick={() => {
-                    const updatedUrls = [...values.imageUrls];
-                    updatedUrls.splice(index, 1);
-                    setValues({
-                      ...values,
-                      imageUrls: updatedUrls,
-                    });
+                  </React.Fragment>
+                </Box>
+              ))}
+            {Array.isArray(values.imageUrls) &&
+              values.imageUrls.map((img, index) => (
+                <Box
+                  key={index}
+                  display="grid"
+                  gap="30px"
+                  gridTemplateColumns="repeat(4, minmax(0, 1fr))"
+                  sx={{
+                    "& > div": {
+                      gridColumn: isNonMobile ? undefined : "span 4",
+                    },
                   }}
                 >
-                  <DeleteOutlineSharpIcon />
-                </Button>
-              </Box>
-            ))}
+                  <img
+                    src={img.imageUrl}
+                    alt={`Image ${index + 1}`}
+                    // sx={{ gridColumn: "span 1" }}
+                    style={{
+                      maxWidth: "150px",
+                      maxHeight: "150px",
+                      marginTop: "20px",
+                      border: "1px solid #ffffff",
+                    }}
+                  />
+                  <Button
+                    type="button"
+                    color="secondary"
+                    variant="contained"
+                    style={{
+                      maxWidth: "10px",
+                      maxHeight: "20px",
+                      margin: "auto",
+                      border: "1px solid #ffffff",
+                    }}
+                    onClick={() => {
+                      const updatedUrls = [...values.imageUrls];
+                      updatedUrls.splice(index, 1);
+                      setValues({
+                        ...values,
+                        imageUrls: updatedUrls,
+                      });
+                    }}
+                  >
+                    <DeleteOutlineSharpIcon />
+                  </Button>
+                </Box>
+              ))}
             <Box
               style={{ marginTop: "10px" }}
               display="grid"
@@ -467,7 +518,12 @@ const Form = ({ mode }) => {
                 type="text"
                 label="Link ảnh"
                 onBlur={handleBlur}
-                onChange={(e) => setCurrentImageUrl({ ...currentImageUrl, imageUrl: e.target.value })}
+                onChange={(e) =>
+                  setCurrentImageUrl({
+                    ...currentImageUrl,
+                    imageUrl: e.target.value,
+                  })
+                }
                 value={currentImageUrl.imageUrl}
                 name="newImageUrl"
                 sx={{ gridColumn: "span 2" }}
@@ -493,69 +549,70 @@ const Form = ({ mode }) => {
               Thêm size mới
             </Button>
             <Modal
-              open={openModal}
-              onClose={handleCloseModal}
-              aria-labelledby="modal-title"
-              aria-describedby="modal-description"
-            >
-              <Box
-                sx={{
-                  position: "absolute",
-                  top: "50%",
-                  left: "50%",
-                  transform: "translate(-50%, -50%)",
-                  bgcolor: "background.paper",
-                  boxShadow: 24,
-                  p: 4,
-                }}
-              >
-                <TextField
-                  fullWidth
-                  variant="filled"
-                  type="text"
-                  label="Tên size"
-                  onBlur={handleBlur}
-                  onChange={(e) =>
-                    setCurrentSize({ ...currentSize, sizeName: e.target.value })
-                  }
-                  value={currentSize.sizeName}
-                  name="newSize.sizeName"
-                  sx={{ mb: 2 }}
-                />
-                <TextField
-                  fullWidth
-                  variant="filled"
-                  type="number"
-                  label="Số lượng"
-                  onBlur={handleBlur}
-                  onChange={(e) =>
-                    setCurrentSize({ ...currentSize, quantity: e.target.value })
-                  }
-                  value={currentSize.quantity}
-                  name="newSize.quantity"
-                  sx={{ mb: 2 }}
-                />
+  open={openModal}
+  onClose={handleCloseModal}
+  aria-labelledby="modal-title"
+  aria-describedby="modal-description"
+>
+  <Box
+    sx={{
+      position: "absolute",
+      top: "50%",
+      left: "50%",
+      transform: "translate(-50%, -50%)",
+      bgcolor: "background.paper",
+      boxShadow: 24,
+      p: 4,
+    }}
+  >
+    <Typography variant="h6">
+      {currentSize.sizeId ? "Chỉnh sửa size" : "Thêm size mới"}
+    </Typography>
+    <TextField
+      fullWidth
+      variant="filled"
+      type="text"
+      label="Tên size"
+      onBlur={handleBlur}
+      onChange={(e) =>
+        setCurrentSize({ ...currentSize, sizeName: e.target.value })
+      }
+      value={currentSize.sizeName}
+      name="newSize.sizeName"
+      sx={{ mb: 2 }}
+    />
+    <TextField
+      fullWidth
+      variant="filled"
+      type="number"
+      label="Số lượng"
+      onBlur={handleBlur}
+      onChange={(e) =>
+        setCurrentSize({ ...currentSize, quantity: e.target.value })
+      }
+      value={currentSize.quantity}
+      name="newSize.quantity"
+      sx={{ mb: 2 }}
+    />
+    <Button
+      type="button"
+      color="secondary"
+      variant="contained"
+      onClick={() => (
+        currentSize.sizeId
+          ? handleEditSize(values, setValues)
+          : handleAddSize(values, setValues),
+        handleCloseModal()
+      )}
+    >
+      {currentSize.sizeId ? "Lưu chỉnh sửa" : "Thêm size"}
+    </Button>
+  </Box>
+</Modal>
 
-                <Button
-                  type="button"
-                  color="secondary"
-                  variant="contained"
-                  onClick={() => (
-                    handleAddSize(values, setValues),
-                    handleCloseModal()
-                    )}
-                >
-                  Thêm size
-                </Button>
-              </Box>
-            </Modal>
             <Box display="flex" justifyContent="end" mt="20px">
-              <Button
-                type="submit"
-                color="secondary"
-                variant="contained"
-              >
-                {mode === 'edit' ? "Lưu thay đổi" : "Tạo mới"}
+              <Button type="submit" color="secondary" variant="contained">
+                {mode === "edit" ? "Lưu thay đổi" : "Tạo mới"}
               </Button>
             </Box>
           </form>

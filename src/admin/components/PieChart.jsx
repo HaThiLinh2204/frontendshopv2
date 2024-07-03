@@ -14,15 +14,16 @@ const PieChart = () => {
   const [quantitySoldAccessory, setQuantitySoldAccessory] = useState(0);
   const [quantitySoldHandBags, setQuantitySoldHandBags] = useState(0);
   const [data, setData] = useState([]);
-  
+  const [dataLoaded, setDataLoaded] = useState(false);
+
   useEffect(() => {
     const fetchDataByCategory = async (category, setState) => {
       try { 
         const response = await axios.get(`http://localhost:8004/product/${category}/totalSold`);
-        console.log('11111');
-        console.log(`Response for ${category}:`, response);
+        // console.log('11111');
+        // console.log(`Response for ${category}:`, response);
         setState(response.data);
-        console.log(`${category} sold:`, response.data);
+        // console.log(`${category} sold:`, response.data);
       } catch (error) {
         console.error("Error fetching data", error);
       }
@@ -35,7 +36,7 @@ const PieChart = () => {
   }, []);
 
   useEffect(() => {
-    console.log('22222',quantitySoldShoe, quantitySoldClothes, quantitySoldHandBags, quantitySoldAccessory);
+    // console.log('22222',quantitySoldShoe, quantitySoldClothes, quantitySoldHandBags, quantitySoldAccessory);
     setData([
       {
         id: "Giày dép",
@@ -62,6 +63,7 @@ const PieChart = () => {
         color: "hsl(229, 70%, 50%)",
       }
     ]);
+    setDataLoaded(true);
   }, [quantitySoldShoe, quantitySoldClothes, quantitySoldAccessory, quantitySoldHandBags])
 
   const tooltipFormat = ( datum) => {
@@ -74,107 +76,120 @@ const PieChart = () => {
     }
   };
   return (
-    <ResponsivePie
-      data={data}
-      theme={{
-        axis: {
-          domain: {
-            line: {
-              stroke: colors.grey[100],
-            },
-          },
-          legend: {
-            text: {
-              fill: colors.grey[100],
-            },
-          },
-          ticks: {
-            line: {
-              stroke: colors.grey[100],
-              strokeWidth: 1,
-            },
-            text: {
-              fill: colors.grey[100],
-            },
-          },
-        },
-        legends: {
-          text: {
-            fill: colors.grey[100],
-          },
-        },
-      }}
-      margin={{ top: 40, right: 80, bottom: 80, left: 80 }}
-      innerRadius={0.5}
-      padAngle={0.7}
-      cornerRadius={3}
-      activeOuterRadiusOffset={8}
-      borderColor={{
-        from: "color",
-        modifiers: [["darker", 0.2]],
-      }}
-      arcLinkLabelsSkipAngle={10}
-      arcLinkLabelsTextColor={colors.grey[100]}
-      arcLinkLabelsThickness={2}
-      arcLinkLabelsColor={{ from: "color" }}
-      enableArcLabels={false}
-      arcLabelsRadiusOffset={0.4}
-      arcLabelsSkipAngle={7}
-      arcLabelsTextColor={{
-        from: "color",
-        modifiers: [["darker", 2]],
-      }}
-      defs={[
-        {
-          id: "dots",
-          type: "patternDots",
-          background: "inherit",
-          color: "rgba(255, 255, 255, 0.3)",
-          size: 4,
-          padding: 1,
-          stagger: true,
-        },
-        {
-          id: "lines",
-          type: "patternLines",
-          background: "inherit",
-          color: "rgba(255, 255, 255, 0.3)",
-          rotation: -45,
-          lineWidth: 6,
-          spacing: 10,
-        },
-      ]}
-      legends={[
-        {
-          anchor: "bottom",
-          direction: "row",
-          justify: false,
-          translateX: 0,
-          translateY: 56,
-          itemsSpacing: 0,
-          itemWidth: 100,
-          itemHeight: 18,
-          itemTextColor: "#999",
-          itemDirection: "left-to-right",
-          itemOpacity: 1,
-          symbolSize: 18,
-          symbolShape: "circle",
-          effects: [
-            {
-              on: "hover",
-              style: {
-                itemTextColor: "#fff",
+    <>
+      {" "}
+      {dataLoaded && (
+        <ResponsivePie
+          data={data}
+          theme={{
+            axis: {
+              domain: {
+                line: {
+                  stroke: colors.grey[100],
+                },
+              },
+              legend: {
+                text: {
+                  fill: colors.grey[100],
+                },
+              },
+              ticks: {
+                line: {
+                  stroke: colors.grey[100],
+                  strokeWidth: 1,
+                },
+                text: {
+                  fill: colors.grey[100],
+                },
               },
             },
-          ],
-        },
-      ]}
-      tooltip={({ datum }) => (
-        <div style={{ background: "white", padding: "10px", border: "1px solid black", color: "red", borderRadius: "10px" }}>
-          {tooltipFormat( datum)}
-        </div>
+            legends: {
+              text: {
+                fill: colors.grey[100],
+              },
+            },
+          }}
+          margin={{ top: 40, right: 80, bottom: 80, left: 80 }}
+          innerRadius={0.5}
+          padAngle={0.7}
+          cornerRadius={3}
+          activeOuterRadiusOffset={8}
+          borderColor={{
+            from: "color",
+            modifiers: [["darker", 0.2]],
+          }}
+          arcLinkLabelsSkipAngle={10}
+          arcLinkLabelsTextColor={colors.grey[100]}
+          arcLinkLabelsThickness={2}
+          arcLinkLabelsColor={{ from: "color" }}
+          enableArcLabels={false}
+          arcLabelsRadiusOffset={0.4}
+          arcLabelsSkipAngle={7}
+          arcLabelsTextColor={{
+            from: "color",
+            modifiers: [["darker", 2]],
+          }}
+          defs={[
+            {
+              id: "dots",
+              type: "patternDots",
+              background: "inherit",
+              color: "rgba(255, 255, 255, 0.3)",
+              size: 4,
+              padding: 1,
+              stagger: true,
+            },
+            {
+              id: "lines",
+              type: "patternLines",
+              background: "inherit",
+              color: "rgba(255, 255, 255, 0.3)",
+              rotation: -45,
+              lineWidth: 6,
+              spacing: 10,
+            },
+          ]}
+          legends={[
+            {
+              anchor: "bottom",
+              direction: "row",
+              justify: false,
+              translateX: 0,
+              translateY: 56,
+              itemsSpacing: 0,
+              itemWidth: 100,
+              itemHeight: 18,
+              itemTextColor: "#999",
+              itemDirection: "left-to-right",
+              itemOpacity: 1,
+              symbolSize: 18,
+              symbolShape: "circle",
+              effects: [
+                {
+                  on: "hover",
+                  style: {
+                    itemTextColor: "#fff",
+                  },
+                },
+              ],
+            },
+          ]}
+          tooltip={({ datum }) => (
+            <div
+              style={{
+                background: "white",
+                padding: "10px",
+                border: "1px solid black",
+                color: "red",
+                borderRadius: "10px",
+              }}
+            >
+              {tooltipFormat(datum)}
+            </div>
+          )}
+        />
       )}
-    />
+    </>
   );
 };
 

@@ -91,7 +91,8 @@ function ListOrder() {
              <Box gridColumn="span 3" className="product-name">{item.productName}</Box>
              <Box gridColumn="span 1">Loại:{item.sizeName}</Box>
              <Box gridColumn="span 1">Giá: {formatCurrency(item.price)}</Box>
-             <Box gridColumn="span 2">Thành tiền: {formatCurrency(item.subTotal)}Đ</Box>
+             <Box gridColumn="span 1">Số lượng : {item.quantity}</Box>
+             <Box gridColumn="span 1">Thành tiền: {formatCurrency(item.subTotal)}Đ</Box>
              <Box gridColumn="span 2">{item.dateCreated}</Box>
              <Box gridColumn="span 1">
              {item.isReviewed ? (
