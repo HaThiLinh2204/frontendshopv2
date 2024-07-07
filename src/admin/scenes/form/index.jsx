@@ -24,6 +24,8 @@ const Form = ({ mode }) => {
     sizeId: "",
     sizeName: "",
     quantity: "",
+    quantitySold: 0,
+    remainQuantity: 0,
   });
   const [currentImageUrl, setCurrentImageUrl] = React.useState({imageId: "", imageUrl: ""});
   const [initialValues, setInitialValues] = React.useState({
@@ -77,6 +79,8 @@ const Form = ({ mode }) => {
       sizeId: size.sizeId,
       sizeName: size.sizeName,
       quantity: size.quantity,
+      quantitySold: size.quantitySold,
+      remainQuantity: size.remainQuantity,
     });
     setOpenModal(true);
   };
@@ -91,9 +95,9 @@ const Form = ({ mode }) => {
     if (!updatedValues.sizes) {
       updatedValues.sizes = [];
     }
-    updatedValues.sizes.push({sizeId: uuidv4(), sizeName: currentSize.sizeName, quantity: currentSize.quantity });
+    updatedValues.sizes.push({sizeId: uuidv4(), sizeName: currentSize.sizeName, quantity: currentSize.quantity, remainQuantity: currentSize.quantity});
     setValues(updatedValues);
-    setCurrentSize({sizeId:"", sizeName: "", quantity: "" });
+    setCurrentSize({sizeId:"", sizeName: "", quantity: "",quantitySold: 0, remainQuantity: 0, });
     handleCloseModal();
   };
 
@@ -101,11 +105,12 @@ const Form = ({ mode }) => {
     const updatedValues = { ...values };
     const updatedSizes = updatedValues.sizes.map((size) =>
       size.sizeId === currentSize.sizeId
-        ? { ...size, sizeName: currentSize.sizeName, quantity: currentSize.quantity }
+        ? { ...size, sizeName: currentSize.sizeName, quantity: currentSize.quantity,
+          quantitySold: currentSize.quantitySold, remainQuantity: (currentSize.quantity - currentSize.quantitySold) }
         : size
     );
     setValues({ ...updatedValues, sizes: updatedSizes });
-    setCurrentSize({ sizeId: "", sizeName: "", quantity: "" });
+    setCurrentSize({ sizeId: "", sizeName: "", quantity: "", quantitySold: 0, remainQuantity: 0, });
   };
   
 
@@ -119,148 +124,171 @@ const Form = ({ mode }) => {
     setCurrentImageUrl({imageId: "", imageUrl: ""});
   };
 
-  const handleFormSubmit = async(values, { resetForm }) => {
+  const handleFormSubmit = async (values, { resetForm }) => {
     const addedSizes = [];
     const deletedSizes = [];
+    const updatedSizes = [];
     const addedImages = [];
     const deletedImages = [];
+
     try {
-      let productData;
-      if (mode === 'edit' && id){
-        productData = {
-          product_id: id,
-          name: values.product_name,
-          category: values.category,
-          description: values.description,
-          price: values.price,
-          saleprice: values.saleprice
-        };
-        const sizesValuesCopy = [...values.sizes];
-        const imageUrlsValuesCopy = [...values.imageUrls];
-        const listCurrentImages = [...JSON.parse(sessionStorage.getItem('listCurrentImages'))];
-        const listCurrentSizes = [...JSON.parse(sessionStorage.getItem('listCurrentSizes'))];
-        console.log('sizesValuesCopy', sizesValuesCopy,'imageUrlsValuesCopy', imageUrlsValuesCopy );
-        console.log('local',listCurrentImages, listCurrentSizes);
-        sizesValuesCopy.forEach(size => {
-          const isNewSize = !listCurrentSizes.some(initialSize => initialSize.sizeId === size.sizeId);
-          if (isNewSize) {
-            addedSizes.push(size);
-          }
-        });
+        let productData;
+        if (mode === 'edit' && id) {
+            productData = {
+                product_id: id,
+                name: values.product_name,
+                category: values.category,
+                description: values.description,
+                price: values.price,
+                saleprice: values.saleprice,
+            };
 
-        listCurrentSizes.forEach(initialSize => {
-          const isDeletedSize = !sizesValuesCopy.some(size => size.sizeId === initialSize.sizeId);
-          if (isDeletedSize) {
-            deletedSizes.push(initialSize.sizeId);
-          }
-        });
+            const sizesValuesCopy = [...values.sizes];
+            const imageUrlsValuesCopy = [...values.imageUrls];
+            const listCurrentImages = [...JSON.parse(sessionStorage.getItem('listCurrentImages'))];
+            const listCurrentSizes = [...JSON.parse(sessionStorage.getItem('listCurrentSizes'))];
 
-        imageUrlsValuesCopy.forEach(image => {
-          const isNewImage = !listCurrentImages.some(initialImage => initialImage.imageId === image.imageId);
-          if (isNewImage) {
-            addedImages.push(image);
-          }
-        });
+            sizesValuesCopy.forEach(size => {
+                const existingSize = listCurrentSizes.find(initialSize => initialSize.sizeId === size.sizeId);
+                if (existingSize) {
+                    if (existingSize.sizeName !== size.sizeName || existingSize.quantity !== size.quantity || existingSize.remainQuantity !== size.remainQuantity || existingSize.quantitySold !== size.quantitySold) {
+                        updatedSizes.push(size);
+                    }
+                } else {
+                    addedSizes.push(size);
+                }
+            });
 
-        listCurrentImages.forEach(initialImage => {
-          const isDeletedImage = !imageUrlsValuesCopy.some(image => image.imageId === initialImage.imageId);
-          if (isDeletedImage) {
-            deletedImages.push(initialImage.imageId);
-          }
-        });
-        
-        const performChanges = async () => {
-          const productResponse = await Axios.put('http://localhost:8004/products', productData);
-          if (deletedSizes.length) {
-            await Promise.all(
-              deletedSizes.map(async (sizeId) => {
-                await axios.delete(`http://localhost:8004/product/size/${sizeId}`);
-              })
-            );
-          }
-        
-          if (deletedImages.length) {
-            await Promise.all(
-              deletedImages.map(async (imageId) => {
-                await axios.delete(`http://localhost:8004/product/image/${imageId}`);
-              })
-            );
-          }
+            listCurrentSizes.forEach(initialSize => {
+              const isDeletedSize = !sizesValuesCopy.some(size => size.sizeId === initialSize.sizeId);
+              if (isDeletedSize) {
+                deletedSizes.push(initialSize.sizeId);
+              }
+            });
 
-          await Promise.all(
-            addedSizes.map(async (size) => {
-              await axios.post(`http://localhost:8004/product/size`, {
-                productId: id,
-                ...size});
-            })
-          );
-        
-          await Promise.all(
-            addedImages.map(async (image) => {
-              await axios.post(`http://localhost:8004/product/image`, {
-                productId: id,
-                ...image});
-            })
-          );
-        };
-        
-        performChanges()
-          .then(() => {
-            console.log("Thay đổi đã được thực hiện thành công!");
-          })
-          .catch(error => {
-            console.error("Đã xảy ra lỗi khi thực hiện thay đổi:", error);
-          });
-        navigate(`/admin/form`);
-      }
-      else {
-        const productId = uuidv4();
-        const currentDate = new Date();
-        const formattedDate = currentDate.toISOString();
-        productData = {
-          product_id: productId,
-          name: values.product_name,
-          category: values.category,
-          description: values.description,
-          price: values.price,
-          saleprice: values.saleprice,
-          createdDate: formattedDate
-        };
-        const productResponse = await Axios.post('http://localhost:8004/products', productData);
-        for (const size of values.sizes) {
-          await Axios.post('http://localhost:8004/product/size', {
-            productId: productId,
-            sizeName: size.sizeName,
-            quantity: size.quantity,
-            sizeId: size.sizeId,
-            remainQuantity: size.quantity
-          });
+            imageUrlsValuesCopy.forEach(image => {
+                const isNewImage = !listCurrentImages.some(initialImage => initialImage.imageId === image.imageId);
+                if (isNewImage) {
+                    addedImages.push(image);
+                }
+            });
+
+            listCurrentImages.forEach(initialImage => {
+                const isDeletedImage = !imageUrlsValuesCopy.some(image => image.imageId === initialImage.imageId);
+                if (isDeletedImage) {
+                    deletedImages.push(initialImage.imageId);
+                }
+            });
+
+            const performChanges = async () => {
+                const productResponse = await Axios.put('http://localhost:8004/products', productData);
+
+                if (deletedSizes.length) {
+                    await Promise.all(
+                        deletedSizes.map(async (sizeId) => {
+                            await axios.delete(`http://localhost:8004/product/size/${sizeId}`);
+                        })
+                    );
+                }
+
+                if (deletedImages.length) {
+                    await Promise.all(
+                        deletedImages.map(async (imageId) => {
+                            await axios.delete(`http://localhost:8004/product/image/${imageId}`);
+                        })
+                    );
+                }
+
+                if (updatedSizes.length) {
+                    await Promise.all(
+                        updatedSizes.map(async (size) => {
+                            await axios.put(`http://localhost:8004/product/size`, {
+                                productId: id,
+                                ...size
+                            });
+                        })
+                    );
+                }
+
+                if (addedSizes) {
+                  await Promise.all(
+                    addedSizes.map(async (size) => {
+                        await axios.post(`http://localhost:8004/product/size`, {
+                            productId: id,
+                            ...size
+                        });
+                    })
+                );
+                }
+
+                if (addedImages.length) {
+                  await Promise.all(
+                    addedImages.map(async (image) => {
+                      await axios.post(`http://localhost:8004/product/image`, {
+                        productId: id,
+                        ...image,
+                      });
+                    })
+                  );
+                }
+            };
+
+            performChanges()
+                .then(() => {
+                    console.log("Thay đổi đã được thực hiện thành công!");
+                })
+                .catch(error => {
+                    console.error("Đã xảy ra lỗi khi thực hiện thay đổi:", error);
+                });
+            navigate(`/admin/form`);
+        } else {
+            const productId = uuidv4();
+            const currentDate = new Date();
+            const formattedDate = currentDate.toISOString();
+            productData = {
+                product_id: productId,
+                name: values.product_name,
+                category: values.category,
+                description: values.description,
+                price: values.price,
+                saleprice: values.saleprice,
+                createdDate: formattedDate
+            };
+            const productResponse = await Axios.post('http://localhost:8004/products', productData);
+            for (const size of values.sizes) {
+                await Axios.post('http://localhost:8004/product/size', {
+                    productId: productId,
+                    sizeName: size.sizeName,
+                    quantity: size.quantity,
+                    sizeId: size.sizeId,
+                    remainQuantity: size.quantity
+                });
+            }
+            for (const image of values.imageUrls) {
+                await Axios.post('http://localhost:8004/product/image', {
+                    imageId: image.imageId,
+                    productId: productId,
+                    imageUrl: image.imageUrl,
+                });
+            }
+            console.log('Product details (including sizes and images) successfully saved.');
         }
-        for (const image of values.imageUrls) {
-          await Axios.post('http://localhost:8004/product/image', {
-            imageId: image.imageId,
-            productId: productId,
-            imageUrl: image.imageUrl,
-          });
-        }
-        console.log('Product details (including sizes and images) successfully saved.');
-      }
-      resetForm({
-        values: 
-        {
-          product_name:"",
-          category: "SHOE",
-          description: "",
-          price: 0,
-          saleprice: 0,          
-          sizes: [],
-          imageUrls: [],
-        }
-      });
+        resetForm({
+            values: {
+                product_name: "",
+                category: "SHOE",
+                description: "",
+                price: 0,
+                saleprice: 0,
+                sizes: [],
+                imageUrls: [],
+            }
+        });
     } catch (error) {
-      console.error('Error while calling API:', error);
+        console.error('Error while calling API:', error);
     }
-  };
+};
+
 
   const handleRemoveSize = (index, values, setValues) => {
     const updatedSizes = [...values.sizes];
@@ -443,16 +471,15 @@ const Form = ({ mode }) => {
                     >
                       <DeleteOutlineSharpIcon />
                     </Button>
-                    <Button 
-  type="button"
-  color="secondary"
-  variant="contained"
-  sx={{ gridColumn: "span 1", maxWidth: "30%" }}
-  onClick={() => handleOpenModal(size)}
->
-  <EditIcon />
-</Button>
-
+                    <Button
+                      type="button"
+                      color="secondary"
+                      variant="contained"
+                      sx={{ gridColumn: "span 1", maxWidth: "30%" }}
+                      onClick={() => handleOpenModal(size)}
+                    >
+                      <EditIcon />
+                    </Button>
                   </React.Fragment>
                 </Box>
               ))}
@@ -549,66 +576,66 @@ const Form = ({ mode }) => {
               Thêm size mới
             </Button>
             <Modal
-  open={openModal}
-  onClose={handleCloseModal}
-  aria-labelledby="modal-title"
-  aria-describedby="modal-description"
->
-  <Box
-    sx={{
-      position: "absolute",
-      top: "50%",
-      left: "50%",
-      transform: "translate(-50%, -50%)",
-      bgcolor: "background.paper",
-      boxShadow: 24,
-      p: 4,
-    }}
-  >
-    <Typography variant="h6">
-      {currentSize.sizeId ? "Chỉnh sửa size" : "Thêm size mới"}
-    </Typography>
-    <TextField
-      fullWidth
-      variant="filled"
-      type="text"
-      label="Tên size"
-      onBlur={handleBlur}
-      onChange={(e) =>
-        setCurrentSize({ ...currentSize, sizeName: e.target.value })
-      }
-      value={currentSize.sizeName}
-      name="newSize.sizeName"
-      sx={{ mb: 2 }}
-    />
-    <TextField
-      fullWidth
-      variant="filled"
-      type="number"
-      label="Số lượng"
-      onBlur={handleBlur}
-      onChange={(e) =>
-        setCurrentSize({ ...currentSize, quantity: e.target.value })
-      }
-      value={currentSize.quantity}
-      name="newSize.quantity"
-      sx={{ mb: 2 }}
-    />
-    <Button
-      type="button"
-      color="secondary"
-      variant="contained"
-      onClick={() => (
-        currentSize.sizeId
-          ? handleEditSize(values, setValues)
-          : handleAddSize(values, setValues),
-        handleCloseModal()
-      )}
-    >
-      {currentSize.sizeId ? "Lưu chỉnh sửa" : "Thêm size"}
-    </Button>
-  </Box>
-</Modal>
+              open={openModal}
+              onClose={handleCloseModal}
+              aria-labelledby="modal-title"
+              aria-describedby="modal-description"
+            >
+              <Box
+                sx={{
+                  position: "absolute",
+                  top: "50%",
+                  left: "50%",
+                  transform: "translate(-50%, -50%)",
+                  bgcolor: "background.paper",
+                  boxShadow: 24,
+                  p: 4,
+                }}
+              >
+                <Typography variant="h6">
+                  {currentSize.sizeId ? "Chỉnh sửa size" : "Thêm size mới"}
+                </Typography>
+                <TextField
+                  fullWidth
+                  variant="filled"
+                  type="text"
+                  label="Tên size"
+                  onBlur={handleBlur}
+                  onChange={(e) =>
+                    setCurrentSize({ ...currentSize, sizeName: e.target.value })
+                  }
+                  value={currentSize.sizeName}
+                  name="newSize.sizeName"
+                  sx={{ mb: 2 }}
+                />
+                <TextField
+                  fullWidth
+                  variant="filled"
+                  type="number"
+                  label="Số lượng"
+                  onBlur={handleBlur}
+                  onChange={(e) =>
+                    setCurrentSize({ ...currentSize, quantity: e.target.value })
+                  }
+                  value={currentSize.quantity}
+                  name="newSize.quantity"
+                  sx={{ mb: 2 }}
+                />
+                <Button
+                  type="button"
+                  color="secondary"
+                  variant="contained"
+                  onClick={() => (
+                    currentSize.sizeId
+                      ? handleEditSize(values, setValues)
+                      : handleAddSize(values, setValues),
+                    handleCloseModal()
+                  )}
+                >
+                  {currentSize.sizeId ? "Lưu chỉnh sửa" : "Thêm size"}
+                </Button>
+              </Box>
+            </Modal>
 
             <Box display="flex" justifyContent="end" mt="20px">
               <Button type="submit" color="secondary" variant="contained">
