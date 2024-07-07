@@ -30,7 +30,6 @@ const Item = ({ title, to, icon, selected, setSelected }) => {
       }}
       onClick={() => 
         {
-          console.log('333', title);
           setSelected(title)}}
       icon={icon}
     >

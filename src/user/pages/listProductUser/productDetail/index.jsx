@@ -118,8 +118,8 @@ function ProductDetail() {
             if (element.sizeId === selectedSize) {
               localStorage.setItem("lastAddedCartItem", element.id);
             }
-            alert('Thêm sản phẩm vào giỏ hàng thành công');
           });
+          alert('Thêm sản phẩm vào giỏ hàng thành công');
           updateCartItemCount();
         })
         .catch((error) => {

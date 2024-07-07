@@ -86,11 +86,11 @@ function Cart() {
     const userId = parseInt(localStorage.getItem("user_id"));
     axios.delete(`http://localhost:8004/cart/${userId}/remove?cartItemId=${cartItems[index].id}`)
       .then((response) => {
-        alert("Đã xóa sản phẩm khỏi giỏ hàng");
         updateCartItemCount();
         const newCartItems = [...cartItems];
         newCartItems.splice(index, 1);
         setCartItems(newCartItems);
+        alert("Đã xóa sản phẩm khỏi giỏ hàng");
       })
       .catch((error) => {
         alert("Lỗi khi xóa sản phẩm khỏi giỏ hàng:", error);

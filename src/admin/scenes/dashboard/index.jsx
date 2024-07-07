@@ -64,7 +64,7 @@ const Dashboard = () => {
       setTopSoldProducts([]);
       try {
         const productsResponse = await axios.get("http://localhost:8004/products");
-        const products = productsResponse.data;
+        const products = productsResponse.data.filter(product => product.isDeleted === false);
         const productPromises = products.map(async (product) => {
           const quantitySoldResponse = await axios.get(
             `http://localhost:8004/product/${product.product_id}/quantitySold`
@@ -241,7 +241,7 @@ const Dashboard = () => {
         >
           <div style={{ fontSize: "20px" }}>Tổng mặt hàng </div>
           <div style={{ fontSize: "20px" }}>{totalProducts}</div>
-          <div>{totalQuantity} sản phẩm</div>
+          <div>{allRemainQuantity} sản phẩm</div>
         </Box>
         <Box
           gridColumn="span 2"
